@@ -1,0 +1,118 @@
+[
+  {
+    "item": "Apples",
+    "category": "Fruits"
+  },
+  {
+    "item": "Milk",
+    "category": "Dairy"
+  },
+  {
+    "item": "Bread",
+    "category": "Bakery"
+  },
+  {
+    "item": "Eggs",
+    "category": "Dairy"
+  },
+  {
+    "item": "Spinach",
+    "category": "Vegetables"
+  },
+  {
+    "item": "Chicken",
+    "category": "Meat"
+  },
+  {
+    "item": "Rice",
+    "category": "Grains"
+  },
+  {
+    "item": "Pasta",
+    "category": "Grains"
+  },
+  {
+    "item": "Tomatoes",
+    "category": "Vegetables"
+  },
+  {
+    "item": "Potatoes",
+    "category": "Vegetables"
+  },
+  {
+    "item": "Onions",
+    "category": "Vegetables"
+  },
+  {
+    "item": "Carrots",
+    "category": "Vegetables"
+  },
+  {
+    "item": "Bananas",
+    "category": "Fruits"
+  },
+  {
+    "item": "Oranges",
+    "category": "Fruits"
+  },
+  {
+    "item": "Strawberries",
+    "category": "Fruits"
+  },
+  {
+    "item": "Cheese",
+    "category": "Dairy"
+  },
+  {
+    "item": "Yogurt",
+    "category": "Dairy"
+  },
+  {
+    "item": "Cereal",
+    "category": "Breakfast"
+  },
+  {
+    "item": "Coffee",
+    "category": "Beverages"
+  },
+  {
+    "item": "Tea",
+    "category": "Beverages"
+  },
+  {
+    "item": "Sugar",
+    "category": "Baking"
+  },
+  {
+    "item": "Salt",
+    "category": "Baking"
+  },
+  {
+    "item": "Pepper",
+    "category": "Baking"
+  },
+  {
+    "item": "Butter",
+    "category": "Dairy"
+  },
+  {
+    "item": "Olive Oil",
+    "category": "Cooking"
+  },
+  {
+    "item": "Canned Soup",
+    "category": "Canned Goods"
+  },
+  {
+    "item": "Frozen Pizza",
+    "category": "Frozen Foods"
+  },
+  {
+    "item": "Ice Cream",
+    "category": "Frozen Foods"
+  },
+  {
+    "item": "Chocolate",
+    "category": "Snacks"
+  }
+]
