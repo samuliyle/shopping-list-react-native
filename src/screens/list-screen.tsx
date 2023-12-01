@@ -9,15 +9,15 @@ import {useAllLists} from '../hooks/use-all-lists'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
-const ListScreen = ({navigation}: Props) => {
+export const ListScreen = ({navigation}: Props) => {
   const [lists, setLists] = useAllLists()
 
-  const onPress = (id: string) => {
+  const onPress = (id: number) => {
     console.log('onpress', id)
     navigation.push('ListDetails', {id})
   }
 
-  const onDelete = (id: string) => {
+  const onDelete = (id: number) => {
     console.log('delete', id)
     setLists(lists.filter(l => l.id !== id) ?? [])
   }
@@ -44,5 +44,3 @@ const ListScreen = ({navigation}: Props) => {
     </Box>
   )
 }
-
-export default ListScreen

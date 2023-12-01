@@ -13,7 +13,7 @@ import {Box} from '../components/box'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
-const ListDetailsScreen = ({navigation, route}: Props) => {
+export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {id} = route.params
   const [list] = useCurrentList(id)
   const [items, setItems] = useListItems(id)
@@ -116,5 +116,3 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
-
-export default ListDetailsScreen

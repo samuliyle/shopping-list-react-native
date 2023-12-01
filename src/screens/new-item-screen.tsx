@@ -17,7 +17,7 @@ import {useProducts} from '../hooks/use-products'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewItem'>
 
-const NewItemScreen = ({route}: Props) => {
+export const NewItemScreen = ({route}: Props) => {
   const {listId} = route.params
   const [items, setItems] = useListItems(listId)
   const [newItemName, setNewItemName] = useState('')
@@ -118,5 +118,3 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
-
-export default NewItemScreen

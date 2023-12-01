@@ -1,6 +1,6 @@
 import React from 'react'
 import {render, userEvent} from '../../../test-utils'
-import NewItemScreen from '../../screens/new-item-screen'
+import {NewItemScreen} from '../../screens/new-item-screen'
 import {Product} from '../../types'
 
 const mockProducts: Product[] = [

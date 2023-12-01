@@ -1,22 +1,26 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useState} from 'react'
-import {RootStackParamList} from '../types'
+import {RootStackParamList, ShoppingList} from '../types'
 import {Button, StyleSheet, TextInput, View} from 'react-native'
-import {addNewList} from '../storage'
+import {useAllLists} from '../hooks/use-all-lists'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1
-  }
-})
-
-const NewListScreen = ({navigation}: Props) => {
+export const NewListScreen = ({navigation}: Props) => {
   const [text, setText] = useState('')
+  const [lists, setLists] = useAllLists()
 
   const onCreate = () => {
-    addNewList(text)
+    const newId =
+      lists.reduce(
+        (prev, current) => (prev > current.id ? prev : current.id),
+        0
+      ) + 1
+    const newList: ShoppingList = {
+      name: text,
+      id: newId
+    }
+    setLists([...lists, newList])
     navigation.navigate('Lists')
   }
 
@@ -33,4 +37,8 @@ const NewListScreen = ({navigation}: Props) => {
   )
 }
 
-export default NewListScreen
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1
+  }
+})

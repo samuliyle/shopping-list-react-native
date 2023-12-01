@@ -3,9 +3,9 @@
  */
 export type RootStackParamList = {
   Lists: undefined
-  ListDetails: {id: string}
+  ListDetails: {id: number}
   NewList: undefined
-  NewItem: {listId: string}
+  NewItem: {listId: number}
 }
 
 export type ShoppingListItem = {
@@ -15,10 +15,7 @@ export type ShoppingListItem = {
 
 export type ShoppingList = {
   name: string
-  /**
-   * UUID
-   */
-  id: string
+  id: number
 }
 
 export type Category =

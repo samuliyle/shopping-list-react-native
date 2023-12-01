@@ -17,7 +17,7 @@ const CardContainer = createRestyleComponent<
 >([createVariant({themeKey: 'cardVariants'})], Box)
 
 type Props = {
-  listId: string
+  listId: number
   name: string
   onPress: () => void
   onDelete?: () => void

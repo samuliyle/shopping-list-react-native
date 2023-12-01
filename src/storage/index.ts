@@ -1,11 +1,12 @@
 import {MMKV} from 'react-native-mmkv'
-import {Category, Product, ShoppingList} from '../types'
-import {v4 as uuidv4} from 'uuid'
+import {Category, Product} from '../types'
 import productsJson from '../data/products.json'
 
 export const storage = new MMKV()
 
 export const seedData = () => {
+  //storage.clearAll()
+
   console.log('start seed data')
   const hasProducts = storage.contains('products')
   if (hasProducts) {
@@ -20,23 +21,4 @@ export const seedData = () => {
   }))
   storage.set('products', JSON.stringify(products))
   console.log('seeded data')
-}
-
-export const getLists = (): ShoppingList[] => {
-  const serializedLists = storage.getString('lists')
-  console.log(serializedLists)
-  if (!serializedLists) {
-    return []
-  } else {
-    return JSON.parse(serializedLists)
-  }
-}
-
-export const addNewList = (name: string) => {
-  const lists = getLists()
-  lists.push({
-    name: name,
-    id: uuidv4()
-  })
-  storage.set('lists', JSON.stringify(lists))
 }

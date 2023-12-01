@@ -2,7 +2,7 @@ import {useMMKVObject} from 'react-native-mmkv'
 import {ShoppingListItem} from '../types'
 
 export const useListItems = (
-  id: string
+  id: number
 ): [
   items: ShoppingListItem[],
   setItems: (value: ShoppingListItem[] | undefined) => void

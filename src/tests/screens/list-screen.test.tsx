@@ -1,6 +1,6 @@
 import React from 'react'
 import {ShoppingList} from '../../types'
-import ListScreen from '../../screens/list-screen'
+import {ListScreen} from '../../screens/list-screen'
 import * as mockedMmkv from 'react-native-mmkv'
 import {render} from '../../../test-utils'
 
@@ -25,11 +25,11 @@ describe('ListScreen', () => {
     const mockLists: ShoppingList[] = [
       {
         name: 'test',
-        id: '1'
+        id: 1
       },
       {
         name: 'list',
-        id: '2'
+        id: 2
       }
     ]
     jest
