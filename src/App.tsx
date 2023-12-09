@@ -10,6 +10,8 @@ import {NewItemScreen} from './screens/new-item-screen'
 import {ThemeProvider} from '@shopify/restyle'
 import {theme, darkTheme} from './theme'
 import {SafeAreaView, StyleSheet} from 'react-native'
+import {ToastProvider} from './contexts/toast-context'
+import {Toast} from './components/toast'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -24,12 +26,15 @@ const App = () => {
     <NavigationContainer>
       <ThemeProvider theme={selectedTheme}>
         <SafeAreaView style={styles.container}>
-          <Stack.Navigator initialRouteName="Lists">
-            <Stack.Screen name="Lists" component={ListScreen} />
-            <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
-            <Stack.Screen name="NewList" component={NewListScreen} />
-            <Stack.Screen name="NewItem" component={NewItemScreen} />
-          </Stack.Navigator>
+          <ToastProvider>
+            <Stack.Navigator initialRouteName="Lists">
+              <Stack.Screen name="Lists" component={ListScreen} />
+              <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
+              <Stack.Screen name="NewList" component={NewListScreen} />
+              <Stack.Screen name="NewItem" component={NewItemScreen} />
+            </Stack.Navigator>
+            <Toast />
+          </ToastProvider>
         </SafeAreaView>
       </ThemeProvider>
     </NavigationContainer>

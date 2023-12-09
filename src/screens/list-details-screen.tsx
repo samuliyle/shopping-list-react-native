@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useEffect} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {ShoppingListItem, RootStackParamList} from '../types'
 import {useCurrentList} from '../hooks/use-current-list'
@@ -10,6 +10,7 @@ import {SwipeList} from '../components/swipe-list'
 import {Text} from '../components/text'
 import {CheckBox} from '../components/checkbox'
 import {Box} from '../components/box'
+import {ToastContext} from '../contexts/toast-context'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
@@ -17,6 +18,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {id} = route.params
   const [list] = useCurrentList(id)
   const [items, setItems] = useListItems(id)
+  const {showToast} = useContext(ToastContext)
 
   useEffect(() => {
     // Update title
@@ -26,6 +28,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const onItemDelete = (item: ShoppingListItem) => {
     const filtered = items.filter(i => i.name !== item.name)
     setItems(filtered)
+    showToast(`Deleted ${item.name}`)
   }
 
   const onFabPress = () => {
