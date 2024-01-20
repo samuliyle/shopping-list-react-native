@@ -3,6 +3,7 @@ import React, {
   createContext,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -52,13 +53,13 @@ export const ToastProvider = ({children}: PropsWithChildren) => {
     }
   }, [hideToast, toast])
 
+  const toastContextValue = useMemo(
+    () => ({hideToast, showToast, toast}),
+    [hideToast, showToast, toast]
+  )
+
   return (
-    <ToastContext.Provider
-      value={{
-        hideToast,
-        showToast,
-        toast
-      }}>
+    <ToastContext.Provider value={toastContextValue}>
       {children}
     </ToastContext.Provider>
   )
