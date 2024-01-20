@@ -1,5 +1,5 @@
 import React from 'react'
-import {render, userEvent} from '../../../test-utils'
+import {render, userEvent, waitFor} from '../../../test-utils'
 import {NewItemScreen} from '../../screens/new-item-screen'
 import {Product} from '../../types'
 
@@ -49,7 +49,9 @@ describe('NewItemScreen', () => {
     const searchInput = await findByPlaceholderText('Add new item')
     await user.type(searchInput, 'test')
 
-    expect(getByText('test')).toBeDefined()
-    expect(queryByText('not related')).toBeNull()
+    await waitFor(() => {
+      expect(getByText('test')).toBeDefined()
+      expect(queryByText('not related')).toBeNull()
+    })
   })
 })

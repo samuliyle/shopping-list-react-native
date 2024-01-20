@@ -1,10 +1,8 @@
 import React, {ReactElement} from 'react'
 import {render, RenderOptions} from '@testing-library/react-native'
-import {ThemeProvider} from '@shopify/restyle'
-import {theme} from './src/theme'
 
 const AllTheProviders = ({children}: {children: React.ReactNode}) => {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  return children
 }
 
 const customRender = (
