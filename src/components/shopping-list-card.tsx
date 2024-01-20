@@ -1,29 +1,18 @@
 import React from 'react'
-import {StyleSheet, TouchableOpacity} from 'react-native'
-import {
-  createRestyleComponent,
-  VariantProps,
-  createVariant
-} from '@shopify/restyle'
-import {Text} from './text'
-import {Theme} from '../theme'
-import {Box} from './box'
+import {StyleSheet, View} from 'react-native'
 import {ProgressBar} from './progress-bar'
 import {useListItems} from '../hooks/use-list-items'
-
-const CardContainer = createRestyleComponent<
-  VariantProps<Theme, 'cardVariants'> & React.ComponentProps<typeof Box>,
-  Theme
->([createVariant({themeKey: 'cardVariants'})], Box)
+import {ListItem, Text} from '@rneui/themed'
+import {DeleteButton} from './delete-button'
 
 type Props = {
   listId: number
   name: string
   onPress: () => void
-  onDelete?: () => void
+  onDelete: () => void
 }
 
-export const ShoppingListCard = ({listId, name, onPress}: Props) => {
+export const ShoppingListCard = ({listId, name, onPress, onDelete}: Props) => {
   const [items] = useListItems(listId)
 
   const totalItems = items.length
@@ -33,29 +22,34 @@ export const ShoppingListCard = ({listId, name, onPress}: Props) => {
       ? 0
       : Math.round((checkedCount / totalItems) * 100)
 
+  const renderRightContent = () => <DeleteButton onDelete={onDelete} />
+
   return (
-    <TouchableOpacity onPress={() => onPress()}>
-      <CardContainer variant="primary">
-        <Text variant="body">{name}</Text>
-        <Box style={styles.container}>
-          <Box style={styles.progressBar}>
+    <ListItem.Swipeable
+      bottomDivider
+      onPress={() => onPress()}
+      rightContent={renderRightContent}>
+      <ListItem.Content>
+        <ListItem.Title>{name}</ListItem.Title>
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBarContainer}>
             <ProgressBar percentage={checkedPercentage} />
-          </Box>
-          <Box style={styles.listSizeContainer}>
-            <Text variant="body">{`${checkedCount}/${totalItems}`}</Text>
-          </Box>
-        </Box>
-      </CardContainer>
-    </TouchableOpacity>
+          </View>
+          <View style={styles.listSizeContainer}>
+            <Text>{`${checkedCount}/${totalItems}`}</Text>
+          </View>
+        </View>
+      </ListItem.Content>
+    </ListItem.Swipeable>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  progressContainer: {
     flexDirection: 'row',
     marginTop: 12
   },
-  progressBar: {
+  progressBarContainer: {
     width: '80%'
   },
   listSizeContainer: {

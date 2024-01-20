@@ -6,14 +6,12 @@ import {
   RootStackParamList,
   SearchResult
 } from '../types'
-import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {useListItems} from '../hooks/use-list-items'
 import {FlashList} from '@shopify/flash-list'
 import {useSearchProducts} from '../hooks/use-search-products'
-import {Fab} from '../components/fab'
-import {ListItem} from '../components/list-item'
-import Icon from 'react-native-vector-icons/FontAwesome'
 import {useProducts} from '../hooks/use-products'
+import {ListItem, FAB, Icon, Button, Input} from '@rneui/themed'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewItem'>
 
@@ -25,6 +23,9 @@ export const NewItemScreen = ({route}: Props) => {
   const filteredProducts = useSearchProducts(items, products, newItemName)
 
   const onCreate = () => {
+    if (!newItemName) {
+      return
+    }
     if (items.some(i => i.name === newItemName)) {
       return
     }
@@ -70,34 +71,40 @@ export const NewItemScreen = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
+      <Input
+        autoFocus
         style={styles.input}
         placeholder="Add new item"
         value={newItemName}
         onChangeText={newValue => setNewItemName(newValue)}
+        focusable
       />
       <FlashList
         data={filteredProducts}
         renderItem={({item}) => (
-          <ListItem
-            justifyContent="flex-start"
-            name={item.name}
-            left={
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => onSearchResultButtonPress(item)}>
-                <Icon
-                  name={getSearchResultIcon(item.checkedInCurrentList)}
-                  size={18}
-                  color="white"
-                />
-              </TouchableOpacity>
-            }
-          />
+          <ListItem bottomDivider>
+            <Button
+              onPress={() => onSearchResultButtonPress(item)}
+              type="clear">
+              <Icon
+                type="font-awesome"
+                name={getSearchResultIcon(item.checkedInCurrentList)}
+                color="black"
+              />
+            </Button>
+            <ListItem.Content>
+              <ListItem.Title>{item.name}</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
         )}
-        estimatedItemSize={20}
+        estimatedItemSize={30}
       />
-      <Fab variant="secondary" onPress={() => onCreate()} />
+      <FAB
+        placement="right"
+        onPress={() => onCreate()}
+        icon={{name: 'add', color: 'white'}}
+        size="large"
+      />
     </View>
   )
 }
@@ -111,10 +118,5 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10
-  },
-  addButton: {
-    width: '12%',
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 })

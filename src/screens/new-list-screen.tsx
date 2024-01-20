@@ -1,8 +1,9 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useState} from 'react'
 import {RootStackParamList, ShoppingList} from '../types'
-import {Button, StyleSheet, TextInput, View} from 'react-native'
+import {StyleSheet, View} from 'react-native'
 import {useAllLists} from '../hooks/use-all-lists'
+import {Button, Input} from '@rneui/themed'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
@@ -26,7 +27,8 @@ export const NewListScreen = ({navigation}: Props) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
+      <Input
+        autoFocus
         placeholder="List name"
         value={text}
         onChangeText={newValue => setText(newValue)}

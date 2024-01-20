@@ -1,43 +1,87 @@
-import React, {useState} from 'react'
-import {NavigationContainer} from '@react-navigation/native'
-import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import React from 'react'
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native'
+import {
+  NativeStackScreenProps,
+  createNativeStackNavigator
+} from '@react-navigation/native-stack'
 import {ListScreen} from './screens/list-screen'
 import {ListDetailsScreen} from './screens/list-details-screen'
 import {RootStackParamList} from './types'
 import {NewListScreen} from './screens/new-list-screen'
 import {seedData} from './storage'
 import {NewItemScreen} from './screens/new-item-screen'
-import {ThemeProvider} from '@shopify/restyle'
-import {theme, darkTheme} from './theme'
-import {SafeAreaView, StyleSheet} from 'react-native'
+import {StyleSheet, TouchableOpacity, View, useColorScheme} from 'react-native'
 import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
+import {SafeAreaProvider} from 'react-native-safe-area-context'
+import {Icon, ThemeProvider, useTheme} from '@rneui/themed'
+import {theme} from './theme'
+import {SettingsScreen} from './screens/settings-screen'
+import {useSettings} from './hooks/use-settings'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
-const App = () => {
-  const [darkMode] = useState(false)
+const listScreenOptions = ({
+  navigation
+}: NativeStackScreenProps<RootStackParamList, 'Lists'>) => ({
+  headerRight: () => (
+    <TouchableOpacity onPress={() => navigation.push('Settings')}>
+      <Icon name="settings" />
+    </TouchableOpacity>
+  )
+})
 
-  const selectedTheme = darkMode ? darkTheme : theme
+const Navigation = () => {
+  const {theme: rneuiTheme} = useTheme()
+
+  return (
+    <NavigationContainer
+      theme={{
+        colors: {
+          primary: rneuiTheme.colors.primary,
+          background: rneuiTheme.colors.background,
+          card: rneuiTheme.colors.white,
+          text: rneuiTheme.colors.black,
+          border: DefaultTheme.colors.border,
+          notification: DefaultTheme.colors.notification
+        },
+        dark: rneuiTheme.mode === 'dark'
+      }}>
+      <View style={styles.container}>
+        <ToastProvider>
+          <Stack.Navigator initialRouteName="Lists">
+            <Stack.Screen
+              name="Lists"
+              component={ListScreen}
+              options={listScreenOptions}
+            />
+            <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
+            <Stack.Screen name="NewList" component={NewListScreen} />
+            <Stack.Screen name="NewItem" component={NewItemScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+          </Stack.Navigator>
+          <Toast />
+        </ToastProvider>
+      </View>
+    </NavigationContainer>
+  )
+}
+
+const App = () => {
+  const deviceTheme = useColorScheme()
+  const [settings] = useSettings()
+  const selectedTheme =
+    settings.theme === 'device' ? deviceTheme : settings.theme
+  theme.mode = selectedTheme ?? 'light'
 
   seedData()
 
   return (
-    <NavigationContainer>
-      <ThemeProvider theme={selectedTheme}>
-        <SafeAreaView style={styles.container}>
-          <ToastProvider>
-            <Stack.Navigator initialRouteName="Lists">
-              <Stack.Screen name="Lists" component={ListScreen} />
-              <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
-              <Stack.Screen name="NewList" component={NewListScreen} />
-              <Stack.Screen name="NewItem" component={NewItemScreen} />
-            </Stack.Navigator>
-            <Toast />
-          </ToastProvider>
-        </SafeAreaView>
+    <SafeAreaProvider>
+      <ThemeProvider theme={theme}>
+        <Navigation />
       </ThemeProvider>
-    </NavigationContainer>
+    </SafeAreaProvider>
   )
 }
 

@@ -6,6 +6,7 @@ export type RootStackParamList = {
   ListDetails: {id: number}
   NewList: undefined
   NewItem: {listId: number}
+  Settings: undefined
 }
 
 export type ShoppingListItem = {
@@ -19,19 +20,36 @@ export type ShoppingList = {
 }
 
 export type Category =
-  | 'Fruits'
   | 'Dairy'
   | 'Bakery'
-  | 'Vegetables'
   | 'Meat'
   | 'Grains'
+  | 'Produce'
+  | 'Seafood'
   | 'Breakfast'
   | 'Beverages'
   | 'Baking'
-  | 'Cooking'
-  | 'Canned Goods'
-  | 'Frozen Foods'
+  | 'Spices'
+  | 'Condiments'
+  | 'Household'
+  | 'Personal Care'
+  | 'Kitchen'
+  | 'Electronics'
+  | 'Home Improvement'
+  | 'Home Decor'
+  | 'Frozen'
   | 'Snacks'
+  | 'Spreads'
+  | 'Canned Goods'
+  | 'Sauces'
+  | 'Pasta'
+  | 'Sweets'
+  | 'Deli'
+  | 'Pet Supplies'
+  | 'Baby Care'
+  | 'Health'
+  | 'Outdoor'
+  | 'Home Essentials'
   | 'Other'
 
 export type Product = {
@@ -53,3 +71,10 @@ export type SearchResult = {
   checkedInCurrentList: boolean | undefined
   weigth: SearchResultWeigth
 } & Product
+
+export const appThemes = ['light', 'dark', 'device'] as const
+type AppTheme = (typeof appThemes)[number]
+
+export type Settings = {
+  theme: AppTheme
+}
