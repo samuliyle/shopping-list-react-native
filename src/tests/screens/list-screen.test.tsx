@@ -1,17 +1,13 @@
 import React from 'react'
 import {ShoppingList} from '../../types'
 import {ListScreen} from '../../screens/list-screen'
-import * as mockedMmkv from 'react-native-mmkv'
-import {render, userEvent, waitFor} from '../../../test-utils'
+import {render, userEvent, waitFor} from '@testing-library/react-native'
+import * as a from '../../store/shoppingListStore'
 
 jest.useFakeTimers()
-jest.mock('react-native-mmkv', () => {
-  const actual = jest.requireActual('react-native-mmkv')
-  return {
-    __esModule: true,
-    ...actual
-  }
-})
+
+const useShoppingListStoreSpy = jest.spyOn(a, 'useShoppingListStore')
+
 const onNavigation = jest.fn()
 const props = {
   navigation: {
@@ -25,44 +21,66 @@ describe('ListScreen', () => {
   })
 
   test('renders no lists text without lists', () => {
+    useShoppingListStoreSpy.mockImplementation((passedFunction: any) => {
+      const data = {
+        shoppingLists: []
+      }
+
+      return passedFunction(data)
+    })
+
     const {getByText} = render(<ListScreen {...props} />)
-    jest.spyOn(mockedMmkv, 'useMMKVObject').mockReturnValue([[], jest.fn()])
 
     expect(getByText('No lists')).toBeDefined()
   })
 
-  test('renders lists', () => {
+  test('renders lists', async () => {
     const mockLists: ShoppingList[] = [
       {
         name: 'test',
-        id: 1
+        id: 1,
+        items: []
       },
       {
         name: 'list',
-        id: 2
+        id: 2,
+        items: []
       }
     ]
-    jest
-      .spyOn(mockedMmkv, 'useMMKVObject')
-      .mockReturnValue([mockLists, jest.fn()])
+
+    useShoppingListStoreSpy.mockImplementation((passedFunction: any) => {
+      const data = {
+        shoppingLists: mockLists
+      }
+
+      return passedFunction(data)
+    })
 
     const {getByText, queryByText} = render(<ListScreen {...props} />)
 
-    expect(getByText('test')).toBeDefined()
-    expect(getByText('list')).toBeDefined()
-    expect(queryByText('No lists')).toBeNull()
+    await waitFor(() => {
+      expect(getByText('test')).toBeDefined()
+      expect(getByText('list')).toBeDefined()
+      expect(queryByText('No lists')).toBeNull()
+    })
   })
 
   test('navigates to ListDetails on list card press', async () => {
     const mockLists: ShoppingList[] = [
       {
         name: 'test',
-        id: 1
+        id: 1,
+        items: []
       }
     ]
-    jest
-      .spyOn(mockedMmkv, 'useMMKVObject')
-      .mockReturnValue([mockLists, jest.fn()])
+
+    useShoppingListStoreSpy.mockImplementation((passedFunction: any) => {
+      const data = {
+        shoppingLists: mockLists
+      }
+
+      return passedFunction(data)
+    })
 
     const {findByText} = render(<ListScreen {...props} />)
 
@@ -77,15 +95,13 @@ describe('ListScreen', () => {
   })
 
   test('navigates to NewList on FAB press', async () => {
-    const mockLists: ShoppingList[] = [
-      {
-        name: 'test',
-        id: 1
+    useShoppingListStoreSpy.mockImplementation((passedFunction: any) => {
+      const data = {
+        shoppingLists: []
       }
-    ]
-    jest
-      .spyOn(mockedMmkv, 'useMMKVObject')
-      .mockReturnValue([mockLists, jest.fn()])
+
+      return passedFunction(data)
+    })
 
     const {findByTestId} = render(<ListScreen {...props} />)
 

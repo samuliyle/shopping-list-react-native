@@ -1,7 +1,7 @@
 import React from 'react'
-import {render, userEvent, waitFor} from '../../../test-utils'
+import {render, userEvent, waitFor} from '@testing-library/react-native'
 import {NewItemScreen} from '../../screens/new-item-screen'
-import {Product} from '../../types'
+import {Product, ShoppingList} from '../../types'
 
 const mockProducts: Product[] = [
   {
@@ -16,16 +16,24 @@ const mockProducts: Product[] = [
   }
 ]
 
-jest.mock('react-native-mmkv', () => {
-  const actual = jest.requireActual('react-native-mmkv')
-  return {
-    __esModule: true,
-    ...actual,
-    useMMKVObject: jest.fn(() => [mockProducts, jest.fn()])
-  }
-})
+jest.mock('../../store/shoppingListStore', () => ({
+  useShoppingListStore: (passedFunction: any) => {
+    const data = {
+      shoppingLists: [
+        {
+          id: 1,
+          name: 'test list',
+          items: []
+        }
+      ] as ShoppingList[],
+      products: mockProducts
+    }
 
-const props = {route: {params: {}}} as React.ComponentProps<
+    return passedFunction(data)
+  }
+}))
+
+const props = {route: {params: {listId: 1}}} as React.ComponentProps<
   typeof NewItemScreen
 >
 
