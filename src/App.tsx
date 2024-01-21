@@ -8,16 +8,16 @@ import {ListScreen} from './screens/list-screen'
 import {ListDetailsScreen} from './screens/list-details-screen'
 import {RootStackParamList} from './types'
 import {NewListScreen} from './screens/new-list-screen'
-import {seedData} from './storage'
 import {NewItemScreen} from './screens/new-item-screen'
-import {StyleSheet, TouchableOpacity, View, useColorScheme} from 'react-native'
+import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
 import {Icon, ThemeProvider, useTheme} from '@rneui/themed'
 import {theme} from './theme'
 import {SettingsScreen} from './screens/settings-screen'
-import {useSettings} from './hooks/use-settings'
+import {useSelectedTheme} from './hooks/use-selected-theme'
+import {useSeedProducts} from './hooks/use-seed-products'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -68,13 +68,9 @@ const Navigation = () => {
 }
 
 const App = () => {
-  const deviceTheme = useColorScheme()
-  const [settings] = useSettings()
-  const selectedTheme =
-    settings.theme === 'device' ? deviceTheme : settings.theme
-  theme.mode = selectedTheme ?? 'light'
+  theme.mode = useSelectedTheme()
 
-  seedData()
+  useSeedProducts()
 
   return (
     <SafeAreaProvider>

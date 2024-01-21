@@ -17,6 +17,7 @@ export type ShoppingListItem = {
 export type ShoppingList = {
   name: string
   id: number
+  items: ShoppingListItem[]
 }
 
 export type Category =
@@ -73,8 +74,4 @@ export type SearchResult = {
 } & Product
 
 export const appThemes = ['light', 'dark', 'device'] as const
-type AppTheme = (typeof appThemes)[number]
-
-export type Settings = {
-  theme: AppTheme
-}
+export type AppTheme = (typeof appThemes)[number]

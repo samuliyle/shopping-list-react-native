@@ -1,19 +1,22 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
-import {ShoppingListItem, RootStackParamList} from '../types'
-import {useCurrentList} from '../hooks/use-current-list'
-import {useListItems} from '../hooks/use-list-items'
+import {StyleSheet, View} from 'react-native'
+import {ShoppingListItem, RootStackParamList, ShoppingList} from '../types'
 import {ListItem, Text, FAB} from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {DeleteButton} from '../components/delete-button'
+import {useShoppingListStore} from '../store/shoppingListStore'
+import {FlashList} from '@shopify/flash-list'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
 export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {id} = route.params
-  const [list] = useCurrentList(id)
-  const [items, setItems] = useListItems(id)
+  const lists = useShoppingListStore(state => state.shoppingLists)
+  const deleteItem = useShoppingListStore(state => state.deleteItem)
+  const toggleItem = useShoppingListStore(state => state.toggleItem)
+  const list = lists.find(l => l.id === id) as ShoppingList
+  const {items} = list
   const {showToast} = useContext(ToastContext)
 
   useEffect(() => {
@@ -22,8 +25,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   }, [list.name, navigation])
 
   const onItemDelete = (item: ShoppingListItem) => {
-    const filtered = items.filter(i => i.name !== item.name)
-    setItems(filtered)
+    deleteItem(id, item)
     showToast(`Deleted ${item.name}`)
   }
 
@@ -32,10 +34,8 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   }
 
   const onCheckboxPress = (item: ShoppingListItem) => {
-    const updatedItems = items.map(i =>
-      i.name === item.name ? {...i, checked: !i.checked} : i
-    )
-    setItems(updatedItems)
+    toggleItem(id, item.name)
+    showToast(`toggle ${item.name}`)
   }
 
   const renderRightContent = (item: ShoppingListItem) => (
@@ -49,7 +49,8 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
       {noItems ? (
         <Text>Tap the plus button to stard adding products</Text>
       ) : (
-        <FlatList
+        <FlashList
+          estimatedItemSize={57}
           keyExtractor={item => item.name}
           data={items}
           renderItem={data => (

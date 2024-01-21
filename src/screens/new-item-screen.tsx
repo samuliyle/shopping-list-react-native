@@ -1,26 +1,25 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useState} from 'react'
-import {
-  ShoppingListItem,
-  Product,
-  RootStackParamList,
-  SearchResult
-} from '../types'
+import React, {useContext, useState} from 'react'
+import {RootStackParamList, SearchResult, ShoppingList} from '../types'
 import {StyleSheet, View} from 'react-native'
-import {useListItems} from '../hooks/use-list-items'
 import {FlashList} from '@shopify/flash-list'
 import {useSearchProducts} from '../hooks/use-search-products'
-import {useProducts} from '../hooks/use-products'
 import {ListItem, FAB, Icon, Button, Input} from '@rneui/themed'
+import {ToastContext} from '../contexts/toast-context'
+import {useShoppingListStore} from '../store/shoppingListStore'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewItem'>
 
 export const NewItemScreen = ({route}: Props) => {
   const {listId} = route.params
-  const [items, setItems] = useListItems(listId)
+  const lists = useShoppingListStore(state => state.shoppingLists)
+  const addItem = useShoppingListStore(state => state.addItem)
+  const toggleItem = useShoppingListStore(state => state.toggleItem)
+  const list = lists.find(l => l.id === listId) as ShoppingList
+  const {items} = list
   const [newItemName, setNewItemName] = useState('')
-  const [products, setProducts] = useProducts()
-  const filteredProducts = useSearchProducts(items, products, newItemName)
+  const filteredProducts = useSearchProducts(items, newItemName)
+  const {showToast} = useContext(ToastContext)
 
   const onCreate = () => {
     if (!newItemName) {
@@ -29,33 +28,25 @@ export const NewItemScreen = ({route}: Props) => {
     if (items.some(i => i.name === newItemName)) {
       return
     }
-    const item: ShoppingListItem = {
-      name: newItemName,
-      checked: false
-    }
-    setItems([...items, item])
-    if (!products.some(p => p.name === newItemName)) {
-      const newProduct: Product = {
-        name: newItemName,
-        seeded: false,
-        category: 'Other'
-      }
-      setProducts([...products, newProduct])
-    }
+    addItem(listId, newItemName)
+    // if (!products.some(p => p.name === newItemName)) {
+    //   const newProduct: Product = {
+    //     name: newItemName,
+    //     seeded: false,
+    //     category: 'Other'
+    //   }
+    //   setProducts([...products, newProduct])
+    // }
+    showToast(`add ${newItemName}`)
   }
 
   const onSearchResultButtonPress = (item: SearchResult) => {
     if (item.checkedInCurrentList === undefined) {
-      const newItem: ShoppingListItem = {
-        name: item.name,
-        checked: false
-      }
-      setItems([...items, newItem])
+      showToast(`add ${item.name}`)
+      addItem(listId, item.name)
     } else {
-      const updatedItems = items.map(i =>
-        i.name === item.name ? {...i, checked: !i.checked} : i
-      )
-      setItems(updatedItems)
+      showToast(`toggle ${item.name}`)
+      toggleItem(listId, item.name)
     }
   }
 
@@ -97,7 +88,7 @@ export const NewItemScreen = ({route}: Props) => {
             </ListItem.Content>
           </ListItem>
         )}
-        estimatedItemSize={30}
+        estimatedItemSize={72}
       />
       <FAB
         placement="right"

@@ -1,20 +1,15 @@
 import React, {useState} from 'react'
-import {Settings, appThemes} from '../types'
 import {StyleSheet, View} from 'react-native'
 import {CheckBox, ListItem, Overlay, Text} from '@rneui/themed'
-import {useSettings} from '../hooks/use-settings'
+import {useShoppingListStore} from '../store/shoppingListStore'
+import {AppTheme, appThemes} from '../types'
 
 const ThemeSettings = ({onClose}: {onClose: () => void}) => {
-  const [settings, setSettings] = useSettings()
-  const selectedTheme = settings.theme
+  const {theme, changeTheme} = useShoppingListStore()
 
-  const onPress = (newTheme: Settings['theme']) => {
-    if (newTheme !== selectedTheme) {
-      const newSettings = {
-        ...settings,
-        theme: newTheme
-      }
-      setSettings(newSettings)
+  const onPress = (newTheme: AppTheme) => {
+    if (newTheme !== theme) {
+      changeTheme(newTheme)
     }
 
     onClose()
@@ -26,7 +21,7 @@ const ThemeSettings = ({onClose}: {onClose: () => void}) => {
       {appThemes.map(t => (
         <CheckBox
           key={t}
-          checked={selectedTheme === t}
+          checked={theme === t}
           title={t}
           onPress={() => onPress(t)}
           checkedIcon="dot-circle-o"
@@ -38,7 +33,7 @@ const ThemeSettings = ({onClose}: {onClose: () => void}) => {
 }
 
 export const SettingsScreen = () => {
-  const [settings] = useSettings()
+  const theme = useShoppingListStore(state => state.theme)
 
   const [selectedOverlay, setSelectedOverlay] = useState<'theme' | undefined>()
 
@@ -51,7 +46,7 @@ export const SettingsScreen = () => {
       <ListItem bottomDivider onPress={() => setSelectedOverlay('theme')}>
         <ListItem.Content>
           <ListItem.Title>Theme</ListItem.Title>
-          <ListItem.Subtitle>{settings.theme}</ListItem.Subtitle>
+          <ListItem.Subtitle>{theme}</ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />
       </ListItem>

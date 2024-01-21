@@ -1,20 +1,18 @@
 import React from 'react'
 import {StyleSheet, View} from 'react-native'
 import {ProgressBar} from './progress-bar'
-import {useListItems} from '../hooks/use-list-items'
 import {ListItem, Text} from '@rneui/themed'
 import {DeleteButton} from './delete-button'
+import {ShoppingListItem} from '../types'
 
 type Props = {
-  listId: number
+  items: ShoppingListItem[]
   name: string
   onPress: () => void
   onDelete: () => void
 }
 
-export const ShoppingListCard = ({listId, name, onPress, onDelete}: Props) => {
-  const [items] = useListItems(listId)
-
+export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
   const totalItems = items.length
   const checkedCount = items.filter(i => i.checked).length
   const checkedPercentage =

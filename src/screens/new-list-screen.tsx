@@ -1,27 +1,18 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useState} from 'react'
-import {RootStackParamList, ShoppingList} from '../types'
+import {RootStackParamList} from '../types'
 import {StyleSheet, View} from 'react-native'
-import {useAllLists} from '../hooks/use-all-lists'
 import {Button, Input} from '@rneui/themed'
+import {useShoppingListStore} from '../store/shoppingListStore'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
 export const NewListScreen = ({navigation}: Props) => {
   const [text, setText] = useState('')
-  const [lists, setLists] = useAllLists()
+  const addShoppingList = useShoppingListStore(state => state.addShoppingList)
 
   const onCreate = () => {
-    const newId =
-      lists.reduce(
-        (prev, current) => (prev > current.id ? prev : current.id),
-        0
-      ) + 1
-    const newList: ShoppingList = {
-      name: text,
-      id: newId
-    }
-    setLists([...lists, newList])
+    addShoppingList(text)
     navigation.navigate('Lists')
   }
 

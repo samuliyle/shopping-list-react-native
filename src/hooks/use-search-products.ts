@@ -1,3 +1,4 @@
+import {useShoppingListStore} from '../store/shoppingListStore'
 import {
   ShoppingListItem,
   Product,
@@ -11,7 +12,7 @@ const calculateWeight = (
 ): SearchResultWeigth => {
   const {name} = product
 
-  // Search text is longer than the product name, cant match
+  // Search text is longer than the product name, can't match
   if (searchText.length > name.length) {
     return SearchResultWeigth.NO_MATCH
   }
@@ -35,9 +36,10 @@ const calculateWeight = (
   }
 
   // 4. WORD STARTS WITH: If the item has multiple words, then if one of those words starts with the given value
-  if (
-    lowerCaseName.split(' ').some(word => word.startsWith(lowerCaseSearchText))
-  ) {
+  const anyWordStartsWith = lowerCaseName
+    .split(' ')
+    .some(word => word.startsWith(lowerCaseSearchText))
+  if (anyWordStartsWith) {
     return SearchResultWeigth.WORD_STARTS_WITH
   }
 
@@ -49,12 +51,18 @@ const calculateWeight = (
   return SearchResultWeigth.NO_MATCH
 }
 
+/**
+ * Hook to search products by user input and sorted + filtered by relevance
+ * and checks their checked status in current list
+ */
 export const useSearchProducts = (
   currentListItems: ShoppingListItem[],
-  products: Product[],
   searchText: string
 ): SearchResult[] => {
+  const products = useShoppingListStore(state => state.products)
+
   if (!searchText) {
+    // No search text, just return all without calculating weigth
     return products.map(p => {
       const currentListMatch = currentListItems.find(l => l.name === p.name)
       return {
@@ -65,6 +73,7 @@ export const useSearchProducts = (
     })
   }
 
+  // Filter and sort products by weight
   const filteredProducts = products
     .map(p => {
       const weigth = calculateWeight(p, searchText)

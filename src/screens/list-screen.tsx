@@ -2,14 +2,18 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React from 'react'
 import {RootStackParamList} from '../types'
 import {ShoppingListCard} from '../components/shopping-list-card'
-import {useAllLists} from '../hooks/use-all-lists'
 import {FAB, Text} from '@rneui/themed'
 import {StyleSheet, View} from 'react-native'
+import {useShoppingListStore} from '../store/shoppingListStore'
+import {FlashList} from '@shopify/flash-list'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
 export const ListScreen = ({navigation}: Props) => {
-  const [lists, setLists] = useAllLists()
+  const lists = useShoppingListStore(state => state.shoppingLists)
+  const removeShoppingList = useShoppingListStore(
+    state => state.removeShoppingList
+  )
 
   const onPress = (id: number) => {
     console.log('onpress', id)
@@ -18,32 +22,31 @@ export const ListScreen = ({navigation}: Props) => {
 
   const onDelete = (id: number) => {
     console.log('delete', id)
-    // TODO: Delete items too
-    setLists(lists.filter(l => l.id !== id) ?? [])
-  }
-
-  if (lists.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text>No lists</Text>
-      </View>
-    )
+    removeShoppingList(id)
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.shoppingListCardContainer}>
-        <Text h1>Lists</Text>
-        {lists.map(l => (
-          <ShoppingListCard
-            key={l.id}
-            listId={l.id}
-            name={l.name}
-            onPress={() => onPress(l.id)}
-            onDelete={() => onDelete(l.id)}
+      {lists.length === 0 ? (
+        <Text>No lists</Text>
+      ) : (
+        <>
+          <Text h1>Lists</Text>
+          <FlashList
+            estimatedItemSize={92}
+            keyExtractor={list => list.id.toString()}
+            data={lists}
+            renderItem={data => (
+              <ShoppingListCard
+                items={data.item.items}
+                name={data.item.name}
+                onPress={() => onPress(data.item.id)}
+                onDelete={() => onDelete(data.item.id)}
+              />
+            )}
           />
-        ))}
-      </View>
+        </>
+      )}
       <FAB
         testID="add-list-fab"
         placement="right"
