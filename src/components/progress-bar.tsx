@@ -16,13 +16,12 @@ export const ProgressBar = ({percentage}: Props) => {
 const styles = StyleSheet.create({
   progressBarContainer: {
     borderRadius: 13,
-    padding: 3,
-    backgroundColor: 'black'
+    backgroundColor: '#F8F8F8'
   },
   bar: {
     width: '0%',
-    height: 20,
+    height: 10,
     borderRadius: 10,
-    backgroundColor: 'green'
+    backgroundColor: '#33B623'
   }
 })

@@ -24,11 +24,13 @@ export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
 
   return (
     <ListItem.Swipeable
-      bottomDivider
+      containerStyle={styles.card}
       onPress={() => onPress()}
       rightContent={renderRightContent}>
       <ListItem.Content>
-        <ListItem.Title>{name}</ListItem.Title>
+        <ListItem.Title style={styles.cardTitle}>
+          <Text h4>{name}</Text>
+        </ListItem.Title>
         <View style={styles.progressContainer}>
           <View style={styles.progressBarContainer}>
             <ProgressBar percentage={checkedPercentage} />
@@ -45,7 +47,7 @@ export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
 const styles = StyleSheet.create({
   progressContainer: {
     flexDirection: 'row',
-    marginTop: 12
+    alignItems: 'center'
   },
   progressBarContainer: {
     width: '80%'
@@ -53,5 +55,14 @@ const styles = StyleSheet.create({
   listSizeContainer: {
     width: '20%',
     alignItems: 'center'
+  },
+  card: {
+    width: '100%',
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: '#171717'
+  },
+  cardTitle: {
+    marginBottom: 8
   }
 })

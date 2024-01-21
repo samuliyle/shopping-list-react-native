@@ -1,22 +1,36 @@
 import {createTheme} from '@rneui/themed'
 
 const palette = {
-  purple: '#5A31F4',
-  lightPurple: '#7856f6'
+  primary: '#86B6F6',
+  secondary: '#176B87',
+  lightBackground: '#F8F8F8',
+  darkBackground: '#1C1C1D',
+  listItemLightBackground: 'white',
+  listItemDarkBackground: '#2C2C2D'
 }
 
 export const theme = createTheme({
   lightColors: {
-    primary: palette.purple,
-    secondary: palette.lightPurple
+    primary: palette.primary,
+    secondary: palette.secondary,
+    background: palette.lightBackground
   },
   darkColors: {
-    primary: palette.purple,
-    secondary: palette.lightPurple
+    primary: palette.primary,
+    secondary: palette.secondary,
+    background: palette.darkBackground
   },
   components: {
     Button: {
       raised: true
-    }
+    },
+    ListItemSwipeable: (_, themeProps) => ({
+      containerStyle: {
+        backgroundColor:
+          themeProps.mode === 'dark'
+            ? palette.listItemDarkBackground
+            : palette.listItemLightBackground
+      }
+    })
   }
 })
