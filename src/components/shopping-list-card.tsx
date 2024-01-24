@@ -15,10 +15,6 @@ type Props = {
 export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
   const totalItems = items.length
   const checkedCount = items.filter(i => i.checked).length
-  const checkedPercentage =
-    totalItems === 0 || checkedCount === 0
-      ? 0
-      : Math.round((checkedCount / totalItems) * 100)
 
   const renderRightContent = () => <DeleteButton onDelete={onDelete} />
 
@@ -33,7 +29,7 @@ export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
         </ListItem.Title>
         <View style={styles.progressContainer}>
           <View style={styles.progressBarContainer}>
-            <ProgressBar percentage={checkedPercentage} />
+            <ProgressBar totalCount={items.length} filledCount={checkedCount} />
           </View>
           <View style={styles.listSizeContainer}>
             <Text>{`${checkedCount}/${totalItems}`}</Text>

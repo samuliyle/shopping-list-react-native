@@ -1,20 +1,9 @@
 import React from 'react'
-import {render, userEvent, waitFor} from '@testing-library/react-native'
+import {render, userEvent, waitFor} from '../../../test-utils'
 import {NewItemScreen} from '../../screens/new-item-screen'
-import {Product, ShoppingList} from '../../types'
+import {ShoppingList} from '../../types'
 
-const mockProducts: Product[] = [
-  {
-    name: 'test',
-    category: 'Other',
-    seeded: true
-  },
-  {
-    name: 'not related',
-    category: 'Other',
-    seeded: true
-  }
-]
+const mockProducts = ['test', 'not related']
 
 jest.mock('../../store/shoppingListStore', () => ({
   useShoppingListStore: (passedFunction: any) => {

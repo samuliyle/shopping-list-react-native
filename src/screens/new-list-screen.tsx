@@ -4,10 +4,12 @@ import {RootStackParamList} from '../types'
 import {StyleSheet, View} from 'react-native'
 import {Button, Input} from '@rneui/themed'
 import {useShoppingListStore} from '../store/shoppingListStore'
+import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
 export const NewListScreen = ({navigation}: Props) => {
+  const insetsStyle = useSafeAreaInsetsStyle()
   const [text, setText] = useState('')
   const addShoppingList = useShoppingListStore(state => state.addShoppingList)
 
@@ -17,7 +19,7 @@ export const NewListScreen = ({navigation}: Props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, insetsStyle]}>
       <Input
         autoFocus
         placeholder="List name"

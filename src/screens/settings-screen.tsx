@@ -3,6 +3,7 @@ import {StyleSheet, View} from 'react-native'
 import {CheckBox, ListItem, Overlay, Text} from '@rneui/themed'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {AppTheme, appThemes} from '../types'
+import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 
 const ThemeSettings = ({onClose}: {onClose: () => void}) => {
   const {theme, changeTheme} = useShoppingListStore()
@@ -33,6 +34,7 @@ const ThemeSettings = ({onClose}: {onClose: () => void}) => {
 }
 
 export const SettingsScreen = () => {
+  const insetsStyle = useSafeAreaInsetsStyle()
   const theme = useShoppingListStore(state => state.theme)
 
   const [selectedOverlay, setSelectedOverlay] = useState<'theme' | undefined>()
@@ -42,7 +44,7 @@ export const SettingsScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, insetsStyle]}>
       <ListItem bottomDivider onPress={() => setSelectedOverlay('theme')}>
         <ListItem.Content>
           <ListItem.Title>Theme</ListItem.Title>

@@ -6,10 +6,12 @@ import {FAB, Text, makeStyles} from '@rneui/themed'
 import {View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
+import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
 export const ListScreen = ({navigation}: Props) => {
+  const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
   const lists = useShoppingListStore(state => state.shoppingLists)
   const removeShoppingList = useShoppingListStore(
@@ -31,7 +33,7 @@ export const ListScreen = ({navigation}: Props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, insetsStyle]}>
       {lists.length === 0 ? (
         <Text>No lists</Text>
       ) : (

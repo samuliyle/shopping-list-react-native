@@ -1,11 +1,20 @@
+import {makeStyles} from '@rneui/themed'
 import React from 'react'
-import {StyleSheet, View} from 'react-native'
+import {View} from 'react-native'
 
 type Props = {
-  percentage: number
+  totalCount: number
+  filledCount: number
 }
 
-export const ProgressBar = ({percentage}: Props) => {
+export const ProgressBar = ({totalCount, filledCount}: Props) => {
+  const styles = useStyles()
+
+  const percentage =
+    totalCount === 0 || filledCount === 0
+      ? 0
+      : Math.round((filledCount / totalCount) * 100)
+
   return (
     <View style={styles.progressBarContainer}>
       <View style={{...styles.bar, width: `${percentage}%`}} />
@@ -13,15 +22,15 @@ export const ProgressBar = ({percentage}: Props) => {
   )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   progressBarContainer: {
-    borderRadius: 13,
-    backgroundColor: '#F8F8F8'
+    backgroundColor: '#F8F8F8',
+    borderRadius: 10
   },
   bar: {
     width: '0%',
     height: 10,
     borderRadius: 10,
-    backgroundColor: '#33B623'
+    backgroundColor: theme.colors.success
   }
-})
+}))

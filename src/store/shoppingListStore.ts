@@ -2,12 +2,12 @@ import {create} from 'zustand'
 import {persist, createJSONStorage} from 'zustand/middleware'
 import {immer} from 'zustand/middleware/immer'
 import {zustandStorage} from './mmkv'
-import {AppTheme, Product, ShoppingList, ShoppingListItem} from '../types'
+import {AppTheme, ShoppingList, ShoppingListItem} from '../types'
 
 type ShoppingListState = {
   theme: AppTheme
   shoppingLists: ShoppingList[]
-  products: Product[]
+  products: string[]
 }
 
 type ShoppingListActions = {
@@ -15,9 +15,9 @@ type ShoppingListActions = {
   removeShoppingList: (id: number) => void
   addShoppingList: (name: string) => void
   addItem: (listId: number, itemName: string) => void
-  deleteItem: (listId: number, item: ShoppingListItem) => void
+  deleteItem: (listId: number, itemName: string) => void
   toggleItem: (listId: number, itemName: string) => void
-  setProducts: (products: Product[]) => void
+  setProducts: (products: string[]) => void
 }
 
 export const useShoppingListStore = create<
@@ -62,11 +62,11 @@ export const useShoppingListStore = create<
             list.items.push(item)
           }
         }),
-      deleteItem: (listId, item) =>
+      deleteItem: (listId, itemName) =>
         set(state => {
           const list = state.shoppingLists.find(l => l.id === listId)
           if (list) {
-            const itemIndex = list.items.findIndex(i => i.name === item.name)
+            const itemIndex = list.items.findIndex(i => i.name === itemName)
             if (itemIndex !== -1) {
               list.items.splice(itemIndex, 1)
             }

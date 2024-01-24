@@ -20,45 +20,6 @@ export type ShoppingList = {
   items: ShoppingListItem[]
 }
 
-export type Category =
-  | 'Dairy'
-  | 'Bakery'
-  | 'Meat'
-  | 'Grains'
-  | 'Produce'
-  | 'Seafood'
-  | 'Breakfast'
-  | 'Beverages'
-  | 'Baking'
-  | 'Spices'
-  | 'Condiments'
-  | 'Household'
-  | 'Personal Care'
-  | 'Kitchen'
-  | 'Electronics'
-  | 'Home Improvement'
-  | 'Home Decor'
-  | 'Frozen'
-  | 'Snacks'
-  | 'Spreads'
-  | 'Canned Goods'
-  | 'Sauces'
-  | 'Pasta'
-  | 'Sweets'
-  | 'Deli'
-  | 'Pet Supplies'
-  | 'Baby Care'
-  | 'Health'
-  | 'Outdoor'
-  | 'Home Essentials'
-  | 'Other'
-
-export type Product = {
-  name: string
-  category: Category
-  seeded: boolean
-}
-
 export enum SearchResultWeigth {
   CASE_SENSITIVE_EQUALS = 5,
   EQUALS = 4,
@@ -69,9 +30,10 @@ export enum SearchResultWeigth {
 }
 
 export type SearchResult = {
-  checkedInCurrentList: boolean | undefined
-  weigth: SearchResultWeigth
-} & Product
+  name: string
+  inCurrentList: boolean
+  weigth?: SearchResultWeigth
+}
 
 export const appThemes = ['light', 'dark', 'device'] as const
 export type AppTheme = (typeof appThemes)[number]

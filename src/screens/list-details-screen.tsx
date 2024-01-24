@@ -1,16 +1,22 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
-import {StyleSheet, View} from 'react-native'
+import {View} from 'react-native'
 import {ShoppingListItem, RootStackParamList, ShoppingList} from '../types'
-import {ListItem, Text, FAB} from '@rneui/themed'
+import {ListItem, Text, FAB, makeStyles} from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {DeleteButton} from '../components/delete-button'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
+import {palette} from '../theme'
+import {ProgressBar} from '../components/progress-bar'
+import {Spacer} from '../components/spacer'
+import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
 export const ListDetailsScreen = ({navigation, route}: Props) => {
+  const insetsStyle = useSafeAreaInsetsStyle()
+  const styles = useStyles()
   const {id} = route.params
   const lists = useShoppingListStore(state => state.shoppingLists)
   const deleteItem = useShoppingListStore(state => state.deleteItem)
@@ -19,13 +25,15 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {items} = list
   const {showToast} = useContext(ToastContext)
 
+  const checkedCount = items.filter(i => i.checked).length
+
   useEffect(() => {
     // Update title
     navigation.setOptions({title: list.name})
   }, [list.name, navigation])
 
   const onItemDelete = (item: ShoppingListItem) => {
-    deleteItem(id, item)
+    deleteItem(id, item.name)
     showToast(`Deleted ${item.name}`)
   }
 
@@ -45,32 +53,40 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const noItems = items.length === 0
 
   return (
-    <View style={noItems ? styles.noItemsContainer : styles.container}>
+    <View
+      style={[
+        noItems ? styles.noItemsContainer : styles.container,
+        insetsStyle
+      ]}>
       {noItems ? (
         <Text>Tap the plus button to stard adding products</Text>
       ) : (
-        <FlashList
-          estimatedItemSize={57}
-          keyExtractor={item => item.name}
-          data={items}
-          renderItem={data => (
-            <ListItem.Swipeable
-              bottomDivider
-              rightContent={() => renderRightContent(data.item)}>
-              <ListItem.CheckBox
-                // Use ThemeProvider to change the defaults of the checkbox
-                iconType="material-community"
-                checkedIcon="checkbox-marked"
-                uncheckedIcon="checkbox-blank-outline"
-                checked={data.item.checked}
-                onPress={() => onCheckboxPress(data.item)}
-              />
-              <ListItem.Content>
-                <ListItem.Title>{data.item.name}</ListItem.Title>
-              </ListItem.Content>
-            </ListItem.Swipeable>
-          )}
-        />
+        <>
+          <Spacer padding="md" style={styles.progressBar}>
+            <ProgressBar totalCount={items.length} filledCount={checkedCount} />
+          </Spacer>
+          <FlashList
+            estimatedItemSize={57}
+            keyExtractor={item => item.name}
+            data={items}
+            renderItem={data => (
+              <ListItem.Swipeable
+                bottomDivider
+                rightContent={() => renderRightContent(data.item)}>
+                <ListItem.CheckBox
+                  containerStyle={styles.listContainer}
+                  checkedIcon="check"
+                  uncheckedIcon="circle-o"
+                  checked={data.item.checked}
+                  onPress={() => onCheckboxPress(data.item)}
+                />
+                <ListItem.Content>
+                  <ListItem.Title>{data.item.name}</ListItem.Title>
+                </ListItem.Content>
+              </ListItem.Swipeable>
+            )}
+          />
+        </>
       )}
       <FAB
         placement="right"
@@ -82,7 +98,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   container: {
     flex: 1
   },
@@ -90,5 +106,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  listContainer: {
+    backgroundColor:
+      theme.mode === 'dark'
+        ? palette.listItemDarkBackground
+        : palette.listItemLightBackground
+  },
+  progressBar: {
+    backgroundColor:
+      theme.mode === 'dark'
+        ? palette.listItemDarkBackground
+        : palette.listItemLightBackground
   }
-})
+}))

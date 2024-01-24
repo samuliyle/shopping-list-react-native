@@ -9,7 +9,7 @@ import {ListDetailsScreen} from './screens/list-details-screen'
 import {RootStackParamList} from './types'
 import {NewListScreen} from './screens/new-list-screen'
 import {NewItemScreen} from './screens/new-item-screen'
-import {StyleSheet, TouchableOpacity, View} from 'react-native'
+import {StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native'
 import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
@@ -35,35 +35,50 @@ const Navigation = () => {
   const {theme: rneuiTheme} = useTheme()
 
   return (
-    <NavigationContainer
-      theme={{
-        colors: {
-          primary: rneuiTheme.colors.primary,
-          background: rneuiTheme.colors.background,
-          card: rneuiTheme.colors.white,
-          text: rneuiTheme.colors.black,
-          border: DefaultTheme.colors.border,
-          notification: DefaultTheme.colors.notification
-        },
-        dark: rneuiTheme.mode === 'dark'
-      }}>
-      <View style={styles.container}>
-        <ToastProvider>
-          <Stack.Navigator initialRouteName="Lists">
-            <Stack.Screen
-              name="Lists"
-              component={ListScreen}
-              options={listScreenOptions}
-            />
-            <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
-            <Stack.Screen name="NewList" component={NewListScreen} />
-            <Stack.Screen name="NewItem" component={NewItemScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-          </Stack.Navigator>
-          <Toast />
-        </ToastProvider>
-      </View>
-    </NavigationContainer>
+    <>
+      <StatusBar
+        backgroundColor={rneuiTheme.colors.background}
+        barStyle={rneuiTheme.mode === 'dark' ? 'light-content' : 'dark-content'}
+      />
+      <NavigationContainer
+        theme={{
+          colors: {
+            primary: rneuiTheme.colors.primary,
+            background: rneuiTheme.colors.background,
+            card: rneuiTheme.colors.white,
+            text: rneuiTheme.colors.black,
+            border: DefaultTheme.colors.border,
+            notification: DefaultTheme.colors.notification
+          },
+          dark: rneuiTheme.mode === 'dark'
+        }}>
+        <View style={styles.container}>
+          <ToastProvider>
+            <Stack.Navigator
+              initialRouteName="Lists"
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: rneuiTheme.colors.background
+                },
+                headerTitleStyle: {
+                  fontWeight: 'bold'
+                }
+              }}>
+              <Stack.Screen
+                name="Lists"
+                component={ListScreen}
+                options={listScreenOptions}
+              />
+              <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
+              <Stack.Screen name="NewList" component={NewListScreen} />
+              <Stack.Screen name="NewItem" component={NewItemScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen} />
+            </Stack.Navigator>
+            <Toast />
+          </ToastProvider>
+        </View>
+      </NavigationContainer>
+    </>
   )
 }
 

@@ -1,17 +1,12 @@
-import {useShoppingListStore} from '../store/shoppingListStore'
-import {
-  ShoppingListItem,
-  Product,
-  SearchResult,
-  SearchResultWeigth
-} from '../types'
+import {ShoppingListItem, SearchResult, SearchResultWeigth} from '../types'
+import {useAllProducts} from './use-all-products'
+
+const maxTotalItems = 30
 
 const calculateWeight = (
-  product: Product,
+  name: string,
   searchText: string
 ): SearchResultWeigth => {
-  const {name} = product
-
   // Search text is longer than the product name, can't match
   if (searchText.length > name.length) {
     return SearchResultWeigth.NO_MATCH
@@ -59,36 +54,50 @@ export const useSearchProducts = (
   currentListItems: ShoppingListItem[],
   searchText: string
 ): SearchResult[] => {
-  const products = useShoppingListStore(state => state.products)
+  const products = useAllProducts()
 
   if (!searchText) {
     // No search text, just return all without calculating weigth
-    return products.map(p => {
-      const currentListMatch = currentListItems.find(l => l.name === p.name)
-      return {
-        ...p,
-        checkedInCurrentList: currentListMatch?.checked,
-        weigth: SearchResultWeigth.NO_MATCH
-      }
-    })
+    return products
+      .map(p => {
+        const inCurrentList = currentListItems.some(l => l.name === p)
+        return {
+          name: p,
+          inCurrentList
+        }
+      })
+      .slice(0, maxTotalItems)
   }
 
   // Filter and sort products by weight
-  const filteredProducts = products
+  const filteredProducts: SearchResult[] = products
     .map(p => {
       const weigth = calculateWeight(p, searchText)
-      const currentListMatch =
+      const inCurrentList =
         weigth !== SearchResultWeigth.NO_MATCH
-          ? currentListItems.find(l => l.name === p.name)
-          : undefined
+          ? currentListItems.some(l => l.name === p)
+          : false
       return {
-        ...p,
-        checkedInCurrentList: currentListMatch?.checked,
-        weigth: calculateWeight(p, searchText)
+        name: p,
+        inCurrentList,
+        weigth
       }
     })
     .filter(p => p.weigth !== SearchResultWeigth.NO_MATCH)
     .sort((a, b) => (a.weigth < b.weigth ? 1 : -1))
 
-  return filteredProducts
+  // Add the current search text to top of the list if it doesn't already contain it
+  const anyPerfectMatch = filteredProducts.some(
+    f =>
+      f.weigth === SearchResultWeigth.CASE_SENSITIVE_EQUALS ||
+      f.weigth === SearchResultWeigth.EQUALS
+  )
+  if (!anyPerfectMatch) {
+    filteredProducts.unshift({
+      name: searchText,
+      inCurrentList: false
+    })
+  }
+
+  return filteredProducts.slice(0, maxTotalItems)
 }

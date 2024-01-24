@@ -1,8 +1,8 @@
 import React from 'react'
 import {ShoppingList} from '../../types'
 import {ListScreen} from '../../screens/list-screen'
-import {render, userEvent, waitFor} from '@testing-library/react-native'
 import * as a from '../../store/shoppingListStore'
+import {render, userEvent, waitFor} from '../../../test-utils'
 
 jest.useFakeTimers()
 
