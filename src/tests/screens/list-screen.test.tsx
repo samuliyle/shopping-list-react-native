@@ -17,7 +17,7 @@ const props = {
 
 describe('ListScreen', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    onNavigation.mockReset()
   })
 
   test('renders no lists text without lists', () => {
