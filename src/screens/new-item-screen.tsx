@@ -6,7 +6,7 @@ import {FlashList} from '@shopify/flash-list'
 import {useSearchProducts} from '../hooks/use-search-products'
 import {
   ListItem,
-  FAB,
+  FAB as Fab,
   Icon,
   Button,
   useTheme,
@@ -38,14 +38,18 @@ export const NewItemScreen = ({route}: Props) => {
   } = useTheme()
 
   const onCreate = () => {
-    if (!newItemName) {
+    const trimmedNewItem = newItemName.trim()
+    if (!trimmedNewItem) {
       return
     }
-    if (items.some(i => i.name === newItemName)) {
+    const itemAlreadyInList = items.some(
+      i => i.name.toLocaleLowerCase() === trimmedNewItem.toLocaleLowerCase()
+    )
+    if (itemAlreadyInList) {
       return
     }
-    addItem(listId, newItemName)
-    showToast(`add ${newItemName}`)
+    addItem(listId, trimmedNewItem)
+    showToast(`add ${trimmedNewItem}`)
     setNewItemName('')
   }
 
@@ -93,7 +97,7 @@ export const NewItemScreen = ({route}: Props) => {
         )}
         estimatedItemSize={72}
       />
-      <FAB
+      <Fab
         placement="right"
         onPress={onCreate}
         icon={{name: 'add', color: colors.white}}

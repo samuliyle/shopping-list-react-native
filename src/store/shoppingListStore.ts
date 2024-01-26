@@ -5,18 +5,48 @@ import {zustandStorage} from './mmkv'
 import {AppTheme, ShoppingList, ShoppingListItem} from '../types'
 
 type ShoppingListState = {
+  /**
+   * Selected app theme
+   */
   theme: AppTheme
+  /**
+   * All shopping lists including their items
+   */
   shoppingLists: ShoppingList[]
+  /**
+   * Initial seeded products and any new items added by user
+   */
   products: string[]
 }
 
 type ShoppingListActions = {
+  /**
+   * Change app theme
+   */
   changeTheme: (theme: AppTheme) => void
+  /**
+   * Remove shopping list and all its items
+   */
   removeShoppingList: (id: number) => void
+  /**
+   * Add new shopping list
+   */
   addShoppingList: (name: string) => void
+  /**
+   * Add new item to shopping list and to products if it doesnt already exist there
+   */
   addItem: (listId: number, itemName: string) => void
+  /**
+   * Delete item from shopping list
+   */
   deleteItem: (listId: number, itemName: string) => void
+  /**
+   * Toggle item checked status
+   */
   toggleItem: (listId: number, itemName: string) => void
+  /**
+   * Set all initial seede products
+   */
   setProducts: (products: string[]) => void
 }
 
@@ -60,6 +90,12 @@ export const useShoppingListStore = create<
           const list = state.shoppingLists.find(l => l.id === listId)
           if (list) {
             list.items.push(item)
+          }
+          const productExists = state.products.some(
+            p => p.toLocaleLowerCase() === itemName.toLocaleLowerCase()
+          )
+          if (!productExists) {
+            state.products.push(itemName)
           }
         }),
       deleteItem: (listId, itemName) =>

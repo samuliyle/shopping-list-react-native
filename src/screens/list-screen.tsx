@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React from 'react'
 import {RootStackParamList} from '../types'
 import {ShoppingListCard} from '../components/shopping-list-card'
-import {FAB, Text, makeStyles} from '@rneui/themed'
+import {FAB as Fab, Text, makeStyles} from '@rneui/themed'
 import {View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
@@ -32,10 +32,16 @@ export const ListScreen = ({navigation}: Props) => {
     return <View style={styles.itemSeparator} />
   }
 
+  const noLists = lists.length === 0
+
   return (
-    <View style={[styles.container, insetsStyle]}>
-      {lists.length === 0 ? (
-        <Text>No lists</Text>
+    <View
+      style={[
+        noLists ? styles.noItemsContainer : styles.container,
+        insetsStyle
+      ]}>
+      {noLists ? (
+        <Text>Tap the plus button to start adding shopping lists</Text>
       ) : (
         <FlashList
           ItemSeparatorComponent={renderItemSeparator}
@@ -53,7 +59,7 @@ export const ListScreen = ({navigation}: Props) => {
           )}
         />
       )}
-      <FAB
+      <Fab
         testID="add-list-fab"
         placement="right"
         onPress={() => navigation.push('NewList')}
@@ -68,6 +74,11 @@ const useStyles = makeStyles(theme => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background
+  },
+  noItemsContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   shoppingListCardContainer: {
     padding: 16

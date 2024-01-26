@@ -5,6 +5,8 @@ import {StyleSheet, View} from 'react-native'
 import {Button, Input} from '@rneui/themed'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
+import LinearGradient from 'react-native-linear-gradient'
+import {Spacer} from '../components/spacer'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
@@ -14,7 +16,11 @@ export const NewListScreen = ({navigation}: Props) => {
   const addShoppingList = useShoppingListStore(state => state.addShoppingList)
 
   const onCreate = () => {
-    addShoppingList(text)
+    const trimmed = text.trim()
+    if (!trimmed) {
+      return
+    }
+    addShoppingList(trimmed || 'New list')
     navigation.navigate('Lists')
   }
 
@@ -26,8 +32,19 @@ export const NewListScreen = ({navigation}: Props) => {
         value={text}
         onChangeText={newValue => setText(newValue)}
       />
-
-      <Button title="Create" disabled={!text} onPress={() => onCreate()} />
+      <Spacer marginLeft="xl" marginRight="xl">
+        <Button
+          ViewComponent={LinearGradient}
+          linearGradientProps={{
+            colors: ['#fd746c', '#ff9068'],
+            start: {x: 0, y: 0.5},
+            end: {x: 1, y: 0.5}
+          }}
+          containerStyle={styles.addButton}
+          title="Create"
+          onPress={onCreate}
+        />
+      </Spacer>
     </View>
   )
 }
@@ -35,5 +52,8 @@ export const NewListScreen = ({navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1
+  },
+  addButton: {
+    borderRadius: 15
   }
 })

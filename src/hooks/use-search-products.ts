@@ -1,5 +1,5 @@
+import {useShoppingListStore} from '../store/shoppingListStore'
 import {ShoppingListItem, SearchResult, SearchResultWeigth} from '../types'
-import {useAllProducts} from './use-all-products'
 
 const maxTotalItems = 30
 
@@ -54,19 +54,17 @@ export const useSearchProducts = (
   currentListItems: ShoppingListItem[],
   searchText: string
 ): SearchResult[] => {
-  const products = useAllProducts()
+  const products = useShoppingListStore(state => state.products)
 
   if (!searchText) {
     // No search text, just return all without calculating weigth
-    return products
-      .map(p => {
-        const inCurrentList = currentListItems.some(l => l.name === p)
-        return {
-          name: p,
-          inCurrentList
-        }
-      })
-      .slice(0, maxTotalItems)
+    return products.slice(0, maxTotalItems).map(p => {
+      const inCurrentList = currentListItems.some(l => l.name === p)
+      return {
+        name: p,
+        inCurrentList
+      }
+    })
   }
 
   // Filter and sort products by weight

@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
 import {View} from 'react-native'
 import {ShoppingListItem, RootStackParamList, ShoppingList} from '../types'
-import {ListItem, Text, FAB, makeStyles} from '@rneui/themed'
+import {ListItem, Text, FAB as Fab, makeStyles} from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {DeleteButton} from '../components/delete-button'
 import {useShoppingListStore} from '../store/shoppingListStore'
@@ -59,7 +59,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
         insetsStyle
       ]}>
       {noItems ? (
-        <Text>Tap the plus button to stard adding products</Text>
+        <Text>Tap the plus button to start adding products</Text>
       ) : (
         <>
           <Spacer padding="md" style={styles.progressBar}>
@@ -88,7 +88,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
           />
         </>
       )}
-      <FAB
+      <Fab
         placement="right"
         onPress={() => onFabPress()}
         icon={{name: 'add', color: 'white'}}
