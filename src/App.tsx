@@ -62,7 +62,8 @@ const Navigation = () => {
                 },
                 headerTitleStyle: {
                   fontWeight: 'bold'
-                }
+                },
+                orientation: 'portrait'
               }}>
               <Stack.Screen
                 name="Lists"
