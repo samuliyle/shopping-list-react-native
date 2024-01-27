@@ -10,6 +10,10 @@ type ShoppingListState = {
    */
   theme: AppTheme
   /**
+   * Flag whether to prevent the screen from going to sleep while the app is active
+   */
+  keepScreenOn: boolean
+  /**
    * All shopping lists including their items
    */
   shoppingLists: ShoppingList[]
@@ -24,6 +28,10 @@ type ShoppingListActions = {
    * Change app theme
    */
   changeTheme: (theme: AppTheme) => void
+  /**
+   * Toggle whether to keep screen on or not
+   */
+  toggleKeepScreenOn: () => void
   /**
    * Remove shopping list and all its items
    */
@@ -56,9 +64,14 @@ export const useShoppingListStore = create<
   persist(
     immer(set => ({
       theme: 'device',
+      keepScreenOn: false,
       shoppingLists: [],
       products: [],
-      changeTheme: (theme: AppTheme) => set({theme}),
+      changeTheme: theme => set({theme}),
+      toggleKeepScreenOn: () =>
+        set(state => {
+          state.keepScreenOn = !state.keepScreenOn
+        }),
       removeShoppingList: id =>
         set(state => {
           const index = state.shoppingLists.findIndex(l => l.id === id)

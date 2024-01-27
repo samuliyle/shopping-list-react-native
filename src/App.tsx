@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native'
 import {
   NativeStackScreenProps,
@@ -18,6 +18,11 @@ import {theme} from './theme'
 import {SettingsScreen} from './screens/settings-screen'
 import {useSelectedTheme} from './hooks/use-selected-theme'
 import {useSeedProducts} from './hooks/use-seed-products'
+import {useShoppingListStore} from './store/shoppingListStore'
+import {
+  activateKeepAwake,
+  deactivateKeepAwake
+} from '@sayem314/react-native-keep-awake'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -33,6 +38,17 @@ const listScreenOptions = ({
 
 const Navigation = () => {
   const {theme: rneuiTheme} = useTheme()
+  const keepScreenOn = useShoppingListStore(state => state.keepScreenOn)
+
+  useEffect(() => {
+    if (keepScreenOn) {
+      console.log('keep screen awake')
+      activateKeepAwake()
+    } else {
+      console.log('dont keep screen awake')
+      deactivateKeepAwake()
+    }
+  })
 
   return (
     <>
@@ -83,10 +99,8 @@ const Navigation = () => {
   )
 }
 
-const App = () => {
+const AppTheme = () => {
   theme.mode = useSelectedTheme()
-
-  useSeedProducts()
 
   return (
     <SafeAreaProvider>
@@ -95,6 +109,12 @@ const App = () => {
       </ThemeProvider>
     </SafeAreaProvider>
   )
+}
+
+const App = () => {
+  useSeedProducts()
+
+  return <AppTheme />
 }
 
 const styles = StyleSheet.create({
