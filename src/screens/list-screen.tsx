@@ -7,6 +7,8 @@ import {View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
+import {ShoppingCartIcon} from '../components/icons/shopping-cart-icon'
+import {Spacer} from '../components/spacer'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
@@ -41,7 +43,12 @@ export const ListScreen = ({navigation}: Props) => {
         insetsStyle
       ]}>
       {noLists ? (
-        <Text>Tap the plus button to start adding shopping lists</Text>
+        <>
+          <ShoppingCartIcon />
+          <Text h1>No lists</Text>
+          <Spacer marginTop="sm" />
+          <Text>Tap the plus button to start adding shopping lists</Text>
+        </>
       ) : (
         <FlashList
           ItemSeparatorComponent={renderItemSeparator}
@@ -65,6 +72,8 @@ export const ListScreen = ({navigation}: Props) => {
         onPress={() => navigation.push('NewList')}
         icon={{name: 'add', color: 'white'}}
         size="large"
+        title="New list"
+        upperCase
       />
     </View>
   )
@@ -77,8 +86,7 @@ const useStyles = makeStyles(theme => ({
   },
   noItemsContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: 'center'
   },
   shoppingListCardContainer: {
     padding: 16

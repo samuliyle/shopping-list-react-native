@@ -22,27 +22,29 @@ import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 type Props = NativeStackScreenProps<RootStackParamList, 'NewItem'>
 
 export const NewItemScreen = ({route}: Props) => {
+  const {listId} = route.params
+
+  const [newItemName, setNewItemName] = useState('')
+  const {showToast} = useContext(ToastContext)
   const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
-  const {listId} = route.params
-  const lists = useShoppingListStore(state => state.shoppingLists)
-  const addItem = useShoppingListStore(state => state.addItem)
-  const deleteItem = useShoppingListStore(state => state.deleteItem)
-  const list = lists.find(l => l.id === listId) as ShoppingList
-  const {items} = list
-  const [newItemName, setNewItemName] = useState('')
-  const filteredProducts = useSearchProducts(items, newItemName)
-  const {showToast} = useContext(ToastContext)
   const {
     theme: {colors}
   } = useTheme()
+
+  const lists = useShoppingListStore(state => state.shoppingLists)
+  const addItem = useShoppingListStore(state => state.addItem)
+  const deleteItem = useShoppingListStore(state => state.deleteItem)
+
+  const list = lists.find(l => l.id === listId) as ShoppingList
+  const filteredProducts = useSearchProducts(list.items, newItemName)
 
   const onCreate = () => {
     const trimmedNewItem = newItemName.trim()
     if (!trimmedNewItem) {
       return
     }
-    const itemAlreadyInList = items.some(
+    const itemAlreadyInList = list.items.some(
       i => i.name.toLocaleLowerCase() === trimmedNewItem.toLocaleLowerCase()
     )
     if (itemAlreadyInList) {

@@ -1,7 +1,7 @@
 import {createTheme} from '@rneui/themed'
 
 export const palette = {
-  primary: '#86B6F6',
+  primary: '#ff9068',
   secondary: '#176B87',
   lightBackground: '#F8F8F8',
   darkBackground: '#1C1C1D',
@@ -24,6 +24,11 @@ export const theme = createTheme({
     success: palette.success
   },
   components: {
+    Text: (_, themeProps) => ({
+      h1Style: {
+        color: themeProps.colors.primary
+      }
+    }),
     ListItem: (_, themeProps) => ({
       containerStyle: {
         backgroundColor:
@@ -65,6 +70,11 @@ export const theme = createTheme({
             ? palette.listItemDarkBackground
             : palette.lightBackground
       }
-    })
+    }),
+    FAB: {
+      style: {
+        marginBottom: 75
+      }
+    }
   }
 })
