@@ -83,6 +83,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
                 <ListItem.Content>
                   <ListItem.Title>{data.item.name}</ListItem.Title>
                 </ListItem.Content>
+                {data.item.quantity > 1 && <Text>{data.item.quantity}</Text>}
               </ListItem.Swipeable>
             )}
           />
@@ -110,13 +111,13 @@ const useStyles = makeStyles(theme => ({
   listContainer: {
     backgroundColor:
       theme.mode === 'dark'
-        ? palette.listItemDarkBackground
-        : palette.listItemLightBackground
+        ? palette.listItem.darkBackground
+        : palette.listItem.lightBackground
   },
   progressBar: {
     backgroundColor:
       theme.mode === 'dark'
-        ? palette.listItemDarkBackground
-        : palette.listItemLightBackground
+        ? palette.listItem.darkBackground
+        : palette.listItem.lightBackground
   }
 }))

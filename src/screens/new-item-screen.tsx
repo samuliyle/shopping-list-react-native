@@ -8,10 +8,10 @@ import {
   ListItem,
   FAB as Fab,
   Icon,
-  Button,
   useTheme,
   makeStyles,
-  SearchBar
+  SearchBar,
+  Text
 } from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {useShoppingListStore} from '../store/shoppingListStore'
@@ -35,6 +35,12 @@ export const NewItemScreen = ({route}: Props) => {
   const lists = useShoppingListStore(state => state.shoppingLists)
   const addItem = useShoppingListStore(state => state.addItem)
   const deleteItem = useShoppingListStore(state => state.deleteItem)
+  const increaseItemQuantity = useShoppingListStore(
+    state => state.increaseItemQuantity
+  )
+  const decreaseItemQuantity = useShoppingListStore(
+    state => state.decreaseItemQuantity
+  )
 
   const list = lists.find(l => l.id === listId) as ShoppingList
   const filteredProducts = useSearchProducts(list.items, newItemName)
@@ -57,11 +63,21 @@ export const NewItemScreen = ({route}: Props) => {
 
   const onSearchResultButtonPress = (item: SearchResult) => {
     if (item.inCurrentList) {
-      deleteItem(listId, item.name)
-      showToast(`delete ${item.name}`)
+      increaseItemQuantity(listId, item.name)
+      showToast(`increase ${item.name} quantity`)
     } else {
       addItem(listId, item.name)
       showToast(`add ${item.name}`)
+    }
+  }
+
+  const onDeleteItemButtonPress = (item: SearchResult) => {
+    if (item.quantity && item.quantity > 1) {
+      decreaseItemQuantity(listId, item.name)
+      showToast(`decrease ${item.name} quantity`)
+    } else {
+      deleteItem(listId, item.name)
+      showToast(`delete ${item.name}`)
     }
   }
 
@@ -83,18 +99,32 @@ export const NewItemScreen = ({route}: Props) => {
         data={filteredProducts}
         renderItem={({item}) => (
           <ListItem>
-            <Button
+            <Icon
               onPress={() => onSearchResultButtonPress(item)}
-              type="clear">
-              <Icon
-                type="font-awesome"
-                name={item.inCurrentList ? 'trash' : 'plus'}
-                color={item.inCurrentList ? colors.error : colors.success}
-              />
-            </Button>
+              type="material"
+              name="add-circle"
+              color={item.inCurrentList ? colors.primary : colors.grey4}
+              size={30}
+            />
             <ListItem.Content>
               <ListItem.Title>{item.name}</ListItem.Title>
             </ListItem.Content>
+            {item.inCurrentList && (
+              <>
+                {item.quantity && item.quantity > 1 && (
+                  <Spacer marginRight="sm">
+                    <Text>{item.quantity}</Text>
+                  </Spacer>
+                )}
+                <Icon
+                  onPress={() => onDeleteItemButtonPress(item)}
+                  type="material"
+                  name={item.quantity && item.quantity > 1 ? 'remove' : 'close'}
+                  color={colors.error}
+                  size={30}
+                />
+              </>
+            )}
           </ListItem>
         )}
         estimatedItemSize={72}
@@ -114,7 +144,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     backgroundColor:
       theme.mode === 'dark'
-        ? palette.listItemDarkBackground
+        ? palette.listItem.darkBackground
         : theme.colors.white
   }
 }))

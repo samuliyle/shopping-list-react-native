@@ -1,6 +1,7 @@
 import {makeStyles} from '@rneui/themed'
 import React from 'react'
 import {View} from 'react-native'
+import {palette} from '../theme'
 
 type Props = {
   totalCount: number
@@ -24,7 +25,10 @@ export const ProgressBar = ({totalCount, filledCount}: Props) => {
 
 const useStyles = makeStyles(theme => ({
   progressBarContainer: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor:
+      theme.mode === 'dark'
+        ? palette.progressBar.darkBackground
+        : palette.progressBar.lightBackground,
     borderRadius: 10
   },
   bar: {

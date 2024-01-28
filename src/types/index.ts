@@ -12,6 +12,7 @@ export type RootStackParamList = {
 export type ShoppingListItem = {
   name: string
   checked: boolean
+  quantity: number
 }
 
 export type ShoppingList = {
@@ -32,6 +33,7 @@ export enum SearchResultWeigth {
 export type SearchResult = {
   name: string
   inCurrentList: boolean
+  quantity?: number
   weigth?: SearchResultWeigth
 }
 

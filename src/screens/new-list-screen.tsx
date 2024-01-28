@@ -7,6 +7,7 @@ import {useShoppingListStore} from '../store/shoppingListStore'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import LinearGradient from 'react-native-linear-gradient'
 import {Spacer} from '../components/spacer'
+import {palette} from '../theme'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
@@ -17,9 +18,6 @@ export const NewListScreen = ({navigation}: Props) => {
 
   const onCreate = () => {
     const trimmed = text.trim()
-    if (!trimmed) {
-      return
-    }
     addShoppingList(trimmed || 'New list')
     navigation.navigate('Lists')
   }
@@ -36,7 +34,7 @@ export const NewListScreen = ({navigation}: Props) => {
         <Button
           ViewComponent={LinearGradient}
           linearGradientProps={{
-            colors: ['#fd746c', '#ff9068'],
+            colors: ['#fd746c', palette.primary],
             start: {x: 0, y: 0.5},
             end: {x: 1, y: 0.5}
           }}

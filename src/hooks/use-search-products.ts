@@ -59,10 +59,11 @@ export const useSearchProducts = (
   if (!searchText) {
     // No search text, just return all without calculating weigth
     return products.slice(0, maxTotalItems).map(p => {
-      const inCurrentList = currentListItems.some(l => l.name === p)
+      const currentListMatch = currentListItems.find(l => l.name === p)
       return {
         name: p,
-        inCurrentList
+        inCurrentList: currentListMatch !== undefined,
+        quantity: currentListMatch?.quantity
       }
     })
   }
@@ -71,14 +72,15 @@ export const useSearchProducts = (
   const filteredProducts: SearchResult[] = products
     .map(p => {
       const weigth = calculateWeight(p, searchText)
-      const inCurrentList =
+      const currentListMatch =
         weigth !== SearchResultWeigth.NO_MATCH
-          ? currentListItems.some(l => l.name === p)
-          : false
+          ? currentListItems.find(l => l.name === p)
+          : undefined
       return {
         name: p,
-        inCurrentList,
-        weigth
+        inCurrentList: currentListMatch !== undefined,
+        weigth,
+        quantity: currentListMatch?.quantity
       }
     })
     .filter(p => p.weigth !== SearchResultWeigth.NO_MATCH)

@@ -53,6 +53,14 @@ type ShoppingListActions = {
    */
   toggleItem: (listId: number, itemName: string) => void
   /**
+   * Increase items quantity count
+   */
+  increaseItemQuantity: (listId: number, itemName: string) => void
+  /**
+   * Decrease items quantity count
+   */
+  decreaseItemQuantity: (listId: number, itemName: string) => void
+  /**
    * Set all initial seede products
    */
   setProducts: (products: string[]) => void
@@ -98,7 +106,8 @@ export const useShoppingListStore = create<
         set(state => {
           const item: ShoppingListItem = {
             name: itemName,
-            checked: false
+            checked: false,
+            quantity: 1
           }
           const list = state.shoppingLists.find(l => l.id === listId)
           if (list) {
@@ -128,6 +137,26 @@ export const useShoppingListStore = create<
             const item = list.items.find(i => i.name === itemName)
             if (item) {
               item.checked = !item.checked
+            }
+          }
+        }),
+      increaseItemQuantity: (listId, itemName) =>
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === listId)
+          if (list) {
+            const item = list.items.find(i => i.name === itemName)
+            if (item) {
+              item.quantity++
+            }
+          }
+        }),
+      decreaseItemQuantity: (listId, itemName) =>
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === listId)
+          if (list) {
+            const item = list.items.find(i => i.name === itemName)
+            if (item) {
+              item.quantity--
             }
           }
         }),
