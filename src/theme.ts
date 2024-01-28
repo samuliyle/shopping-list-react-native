@@ -86,6 +86,7 @@ export const theme = createTheme({
       }
     }),
     FAB: {
+      upperCase: true,
       style: {
         marginBottom: 75
       },
@@ -95,6 +96,26 @@ export const theme = createTheme({
       titleStyle: {
         color: 'white'
       }
-    }
+    },
+    Button: {
+      uppercase: true,
+      containerStyle: {
+        borderRadius: 20
+      }
+    },
+    Input: (_, themeProps) => ({
+      inputContainerStyle: {
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderLeftWidth: 2,
+        borderRightWidth: 2,
+        borderColor: themeProps.colors.primary,
+        borderRadius: 10
+      },
+      containerStyle: {
+        paddingLeft: 0,
+        paddingRight: 0
+      }
+    })
   }
 })

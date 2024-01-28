@@ -1,8 +1,7 @@
 import React from 'react'
-import {StyleSheet, View} from 'react-native'
+import {View} from 'react-native'
 import {ProgressBar} from './progress-bar'
-import {ListItem, Text} from '@rneui/themed'
-import {DeleteButton} from './delete-button'
+import {Button, ListItem, Text, makeStyles} from '@rneui/themed'
 import {ShoppingListItem} from '../types'
 
 type Props = {
@@ -10,19 +9,45 @@ type Props = {
   name: string
   onPress: () => void
   onDelete: () => void
+  onEdit: () => void
 }
 
-export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
+export const ShoppingListCard = ({
+  items,
+  name,
+  onPress,
+  onDelete,
+  onEdit
+}: Props) => {
+  const styles = useStyles()
   const totalItems = items.length
   const checkedCount = items.filter(i => i.checked).length
 
-  const renderRightContent = () => <DeleteButton onDelete={onDelete} />
+  const renderRightContent = (reset: () => void) => (
+    <View style={styles.rightContentContainer}>
+      <Button
+        icon={{name: 'edit', color: 'white'}}
+        containerStyle={styles.editButtonContainer}
+        buttonStyle={styles.editButton}
+        onPress={() => {
+          onEdit()
+          reset()
+        }}
+      />
+      <Button
+        onPress={onDelete}
+        icon={{name: 'delete', color: 'white'}}
+        containerStyle={styles.deleteButtonContainer}
+        buttonStyle={styles.deleleButton}
+      />
+    </View>
+  )
 
   return (
     <ListItem.Swipeable
       containerStyle={styles.card}
       onPress={() => onPress()}
-      rightContent={renderRightContent}>
+      rightContent={reset => renderRightContent(reset)}>
       <ListItem.Content>
         <ListItem.Title style={styles.cardTitle}>
           <Text h4>{name}</Text>
@@ -40,7 +65,7 @@ export const ShoppingListCard = ({items, name, onPress, onDelete}: Props) => {
   )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center'
@@ -60,5 +85,29 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     marginBottom: 8
+  },
+  rightContentContainer: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  editButtonContainer: {
+    flex: 1,
+    borderRadius: 0
+  },
+  editButton: {
+    minHeight: '100%',
+    backgroundColor: theme.colors.success
+  },
+  deleteButtonContainer: {
+    flex: 1,
+    borderTopRightRadius: 9,
+    borderBottomRightRadius: 9,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    overflow: 'hidden'
+  },
+  deleleButton: {
+    minHeight: '100%',
+    backgroundColor: theme.colors.error
   }
-})
+}))

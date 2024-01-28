@@ -2,9 +2,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useContext, useEffect} from 'react'
 import {View} from 'react-native'
 import {ShoppingListItem, RootStackParamList, ShoppingList} from '../types'
-import {ListItem, Text, FAB as Fab, makeStyles} from '@rneui/themed'
+import {ListItem, Text, FAB as Fab, makeStyles, Button} from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
-import {DeleteButton} from '../components/delete-button'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
 import {palette} from '../theme'
@@ -47,7 +46,12 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   }
 
   const renderRightContent = (item: ShoppingListItem) => (
-    <DeleteButton onDelete={() => onItemDelete(item)} />
+    <Button
+      onPress={() => onItemDelete(item)}
+      icon={{name: 'delete', color: 'white'}}
+      buttonStyle={styles.deleteButton}
+      containerStyle={styles.deleteButtonContainer}
+    />
   )
 
   const noItems = items.length === 0
@@ -94,6 +98,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
         onPress={() => onFabPress()}
         icon={{name: 'add', color: 'white'}}
         size="large"
+        title="Add"
       />
     </View>
   )
@@ -119,5 +124,16 @@ const useStyles = makeStyles(theme => ({
       theme.mode === 'dark'
         ? palette.listItem.darkBackground
         : palette.listItem.lightBackground
+  },
+  deleteButtonContainer: {
+    borderTopRightRadius: 9,
+    borderBottomRightRadius: 9,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    overflow: 'hidden'
+  },
+  deleteButton: {
+    minHeight: '100%',
+    backgroundColor: theme.colors.error
   }
 }))

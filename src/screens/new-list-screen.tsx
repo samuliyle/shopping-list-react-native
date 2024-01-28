@@ -1,8 +1,8 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useState} from 'react'
 import {RootStackParamList} from '../types'
-import {StyleSheet, View} from 'react-native'
-import {Button, Input} from '@rneui/themed'
+import {View} from 'react-native'
+import {Button, Input, makeStyles} from '@rneui/themed'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import LinearGradient from 'react-native-linear-gradient'
@@ -12,7 +12,9 @@ import {palette} from '../theme'
 type Props = NativeStackScreenProps<RootStackParamList, 'NewList'>
 
 export const NewListScreen = ({navigation}: Props) => {
+  const styles = useStyles()
   const insetsStyle = useSafeAreaInsetsStyle()
+
   const [text, setText] = useState('')
   const addShoppingList = useShoppingListStore(state => state.addShoppingList)
 
@@ -24,13 +26,13 @@ export const NewListScreen = ({navigation}: Props) => {
 
   return (
     <View style={[styles.container, insetsStyle]}>
-      <Input
-        autoFocus
-        placeholder="List name"
-        value={text}
-        onChangeText={newValue => setText(newValue)}
-      />
       <Spacer marginLeft="xl" marginRight="xl">
+        <Input
+          autoFocus
+          placeholder="List name"
+          value={text}
+          onChangeText={newValue => setText(newValue)}
+        />
         <Button
           ViewComponent={LinearGradient}
           linearGradientProps={{
@@ -38,7 +40,6 @@ export const NewListScreen = ({navigation}: Props) => {
             start: {x: 0, y: 0.5},
             end: {x: 1, y: 0.5}
           }}
-          containerStyle={styles.addButton}
           title="Create"
           onPress={onCreate}
         />
@@ -47,11 +48,12 @@ export const NewListScreen = ({navigation}: Props) => {
   )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   container: {
-    flexGrow: 1
-  },
-  addButton: {
-    borderRadius: 15
+    flexGrow: 1,
+    backgroundColor:
+      theme.mode === 'dark'
+        ? palette.listItem.darkBackground
+        : theme.colors.background
   }
-})
+}))

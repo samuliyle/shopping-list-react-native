@@ -33,13 +33,17 @@ type ShoppingListActions = {
    */
   toggleKeepScreenOn: () => void
   /**
-   * Remove shopping list and all its items
+   * Remove a shopping list and all its items
    */
   removeShoppingList: (id: number) => void
   /**
-   * Add new shopping list
+   * Add a new shopping list
    */
   addShoppingList: (name: string) => void
+  /**
+   * Rename a shopping list
+   */
+  renameShoppingList: (id: number, newName: string) => void
   /**
    * Add new item to shopping list and to products if it doesnt already exist there
    */
@@ -100,6 +104,14 @@ export const useShoppingListStore = create<
             items: []
           }
           state.shoppingLists.push(newList)
+        })
+      },
+      renameShoppingList: (id, newName) => {
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === id)
+          if (list) {
+            list.name = newName
+          }
         })
       },
       addItem: (listId, itemName) =>
