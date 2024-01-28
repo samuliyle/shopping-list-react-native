@@ -9,11 +9,11 @@ import {ListDetailsScreen} from './screens/list-details-screen'
 import {RootStackParamList} from './types'
 import {NewListScreen} from './screens/new-list-screen'
 import {NewItemScreen} from './screens/new-item-screen'
-import {StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native'
+import {StatusBar, TouchableOpacity, View} from 'react-native'
 import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
-import {Icon, ThemeProvider, useTheme} from '@rneui/themed'
+import {Icon, ThemeProvider, makeStyles, useTheme} from '@rneui/themed'
 import {theme} from './theme'
 import {SettingsScreen} from './screens/settings-screen'
 import {useSelectedTheme} from './hooks/use-selected-theme'
@@ -37,6 +37,7 @@ const listScreenOptions = ({
 })
 
 const Navigation = () => {
+  const styles = useStyles()
   const {theme: rneuiTheme} = useTheme()
   const keepScreenOn = useShoppingListStore(state => state.keepScreenOn)
 
@@ -56,19 +57,19 @@ const Navigation = () => {
         backgroundColor={rneuiTheme.colors.background}
         barStyle={rneuiTheme.mode === 'dark' ? 'light-content' : 'dark-content'}
       />
-      <NavigationContainer
-        theme={{
-          colors: {
-            primary: rneuiTheme.colors.primary,
-            background: rneuiTheme.colors.background,
-            card: rneuiTheme.colors.white,
-            text: rneuiTheme.colors.black,
-            border: DefaultTheme.colors.border,
-            notification: DefaultTheme.colors.notification
-          },
-          dark: rneuiTheme.mode === 'dark'
-        }}>
-        <View style={styles.container}>
+      <View style={styles.container}>
+        <NavigationContainer
+          theme={{
+            colors: {
+              primary: rneuiTheme.colors.primary,
+              background: rneuiTheme.colors.background,
+              card: rneuiTheme.colors.white,
+              text: rneuiTheme.colors.black,
+              border: DefaultTheme.colors.border,
+              notification: DefaultTheme.colors.notification
+            },
+            dark: rneuiTheme.mode === 'dark'
+          }}>
           <ToastProvider>
             <Stack.Navigator
               initialRouteName="Lists"
@@ -93,8 +94,8 @@ const Navigation = () => {
             </Stack.Navigator>
             <Toast />
           </ToastProvider>
-        </View>
-      </NavigationContainer>
+        </NavigationContainer>
+      </View>
     </>
   )
 }
@@ -117,10 +118,11 @@ const App = () => {
   return <AppTheme />
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(themeProps => ({
   container: {
-    flex: 1
+    flexGrow: 1,
+    backgroundColor: themeProps.colors.background
   }
-})
+}))
 
 export default App
