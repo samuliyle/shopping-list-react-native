@@ -14,7 +14,7 @@ import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
 import {Icon, ThemeProvider, makeStyles, useTheme} from '@rneui/themed'
-import {theme} from './theme'
+import {palette, theme} from './theme'
 import {SettingsScreen} from './screens/settings-screen'
 import {useSelectedTheme} from './hooks/use-selected-theme'
 import {useSeedProducts} from './hooks/use-seed-products'
@@ -80,7 +80,8 @@ const Navigation = () => {
                 headerTitleStyle: {
                   fontWeight: 'bold'
                 },
-                orientation: 'portrait'
+                orientation: 'portrait',
+                navigationBarColor: rneuiTheme.colors.background
               }}>
               <Stack.Screen
                 name="Lists"
@@ -89,7 +90,16 @@ const Navigation = () => {
               />
               <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
               <Stack.Screen name="NewList" component={NewListScreen} />
-              <Stack.Screen name="NewItem" component={NewItemScreen} />
+              <Stack.Screen
+                name="NewItem"
+                component={NewItemScreen}
+                options={{
+                  navigationBarColor:
+                    rneuiTheme.mode === 'dark'
+                      ? palette.listItem.darkBackground
+                      : rneuiTheme.colors.white
+                }}
+              />
               <Stack.Screen name="Settings" component={SettingsScreen} />
             </Stack.Navigator>
             <Toast />
