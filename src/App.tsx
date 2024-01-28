@@ -9,7 +9,7 @@ import {ListDetailsScreen} from './screens/list-details-screen'
 import {RootStackParamList} from './types'
 import {NewListScreen} from './screens/new-list-screen'
 import {NewItemScreen} from './screens/new-item-screen'
-import {StatusBar, TouchableOpacity, View} from 'react-native'
+import {StatusBar, View} from 'react-native'
 import {ToastProvider} from './contexts/toast-context'
 import {Toast} from './components/toast'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
@@ -30,9 +30,11 @@ const listScreenOptions = ({
   navigation
 }: NativeStackScreenProps<RootStackParamList, 'Lists'>) => ({
   headerRight: () => (
-    <TouchableOpacity onPress={() => navigation.push('Settings')}>
-      <Icon name="settings" />
-    </TouchableOpacity>
+    <Icon
+      name="settings"
+      onPress={() => navigation.push('Settings')}
+      size={30}
+    />
   )
 })
 

@@ -1,6 +1,12 @@
 import {makeStyles} from '@rneui/themed'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {View} from 'react-native'
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated'
 import {palette} from '../theme'
 
 type Props = {
@@ -16,9 +22,21 @@ export const ProgressBar = ({totalCount, filledCount}: Props) => {
       ? 0
       : Math.round((filledCount / totalCount) * 100)
 
+  const width = useSharedValue(percentage)
+  const widthAnimation = useAnimatedStyle(() => ({
+    width: `${width.value}%`
+  }))
+
+  useEffect(() => {
+    width.value = withTiming(percentage, {
+      duration: 500,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1)
+    })
+  }, [percentage, width])
+
   return (
     <View style={styles.progressBarContainer}>
-      <View style={{...styles.bar, width: `${percentage}%`}} />
+      <Animated.View style={[styles.bar, widthAnimation]} />
     </View>
   )
 }
