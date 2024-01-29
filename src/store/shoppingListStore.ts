@@ -65,6 +65,14 @@ type ShoppingListActions = {
    */
   decreaseItemQuantity: (listId: number, itemName: string) => void
   /**
+   * Uncheck all list items
+   */
+  uncheckAllItems: (listId: number) => void
+  /**
+   * Delete all checked list items
+   */
+  deleteCheckedItems: (listId: number) => void
+  /**
    * Set all initial seede products
    */
   setProducts: (products: string[]) => void
@@ -170,6 +178,22 @@ export const useShoppingListStore = create<
             if (item) {
               item.quantity--
             }
+          }
+        }),
+      uncheckAllItems: listId =>
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === listId)
+          if (list) {
+            list.items.forEach(i => {
+              i.checked = false
+            })
+          }
+        }),
+      deleteCheckedItems: listId =>
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === listId)
+          if (list) {
+            list.items = list.items.filter(i => !i.checked)
           }
         }),
       setProducts: products =>
