@@ -80,7 +80,8 @@ const Navigation = () => {
                   backgroundColor: rneuiTheme.colors.background
                 },
                 headerTitleStyle: {
-                  fontWeight: 'bold'
+                  fontFamily: 'NotoSans-SemiBold',
+                  fontWeight: '600'
                 },
                 orientation: 'portrait',
                 navigationBarColor: rneuiTheme.colors.background

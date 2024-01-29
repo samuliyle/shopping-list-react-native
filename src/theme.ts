@@ -40,9 +40,38 @@ export const theme = createTheme({
     },
     Text: (_, themeProps) => ({
       h1Style: {
-        color: themeProps.colors.primary
-      }
+        color: themeProps.colors.primary,
+        fontFamily: 'NotoSans-SemiBold',
+        fontWeight: '600'
+      },
+      h2Style: {
+        fontFamily: 'NotoSans-SemiBold',
+        fontWeight: '600'
+      },
+      h3Style: {
+        fontFamily: 'NotoSans-SemiBold',
+        fontWeight: '600'
+      },
+      h4Style: {
+        fontFamily: 'NotoSans-SemiBold',
+        fontWeight: '600'
+      },
+      h5Style: {
+        fontFamily: 'NotoSans-SemiBold',
+        fontWeight: '600'
+      },
+      style: {
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500'
+      },
+      selectable: true
     }),
+    ListItemTitle: {
+      style: {
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500'
+      }
+    },
     ListItem: (_, themeProps) => ({
       containerStyle: {
         backgroundColor:
@@ -76,7 +105,9 @@ export const theme = createTheme({
         backgroundColor:
           themeProps.mode === 'dark'
             ? palette.progressBar.darkBackground
-            : palette.background.lightBackground
+            : palette.background.lightBackground,
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500'
       },
       inputContainerStyle: {
         backgroundColor:
@@ -94,13 +125,19 @@ export const theme = createTheme({
         color: 'white'
       },
       titleStyle: {
-        color: 'white'
+        color: 'white',
+        fontFamily: 'NotoSans-Bold',
+        fontWeight: '700'
       }
     },
     Button: {
       uppercase: true,
       containerStyle: {
         borderRadius: 20
+      },
+      titleStyle: {
+        fontFamily: 'NotoSans-Bold',
+        fontWeight: '700'
       }
     },
     Input: (_, themeProps) => ({
@@ -115,7 +152,17 @@ export const theme = createTheme({
       containerStyle: {
         paddingLeft: 0,
         paddingRight: 0
+      },
+      inputStyle: {
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500'
       }
-    })
+    }),
+    CheckBox: {
+      textStyle: {
+        fontFamily: 'NotoSans-Medium',
+        fontWeight: '500'
+      }
+    }
   }
 })

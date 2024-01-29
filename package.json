@@ -12,7 +12,8 @@
     "test:ci": "jest",
     "coverage": "jest --coverage",
     "clean": "npx react-native-clean-project",
-    "dev-tools": "npx react-devtools"
+    "dev-tools": "npx react-devtools",
+    "assets": "npx react-native-asset"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.9",
