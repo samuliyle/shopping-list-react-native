@@ -1,14 +1,15 @@
 import React, {useRef, useContext, useEffect} from 'react'
 import {
-  Text,
-  StyleSheet,
   Animated,
   Platform,
   UIManager,
   Easing,
-  TouchableOpacity
+  TouchableOpacity,
+  StyleSheet
 } from 'react-native'
 import {ToastContext} from '../contexts/toast-context'
+import {Text} from '@rneui/themed'
+import {palette} from '../theme'
 
 if (
   Platform.OS === 'android' &&
@@ -41,8 +42,8 @@ export const Toast = () => {
 
   return (
     <Animated.View style={[styles.toast, {opacity: fadeAnimation.current}]}>
-      <TouchableOpacity onPress={hideToast} style={styles.content}>
-        <Text style={styles.toastMessage}> {toast.message}</Text>
+      <TouchableOpacity onPress={hideToast} style={styles.toastContent}>
+        <Text style={styles.toastMessage}>{toast.message}</Text>
       </TouchableOpacity>
     </Animated.View>
   )
@@ -50,14 +51,14 @@ export const Toast = () => {
 
 const styles = StyleSheet.create({
   toast: {
-    backgroundColor: '#292929',
+    backgroundColor: palette.arsenic,
     borderRadius: 10,
     padding: 10,
     position: 'absolute',
     bottom: 100,
     alignSelf: 'center'
   },
-  content: {
+  toastContent: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -65,10 +66,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   toastMessage: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 12,
-    letterSpacing: 0.26,
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    color: 'white'
   }
 })

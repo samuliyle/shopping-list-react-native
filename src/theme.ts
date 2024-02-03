@@ -33,11 +33,6 @@ export const theme = createTheme({
     success: palette.success
   },
   components: {
-    Icon: {
-      style: {
-        color: 'pink'
-      }
-    },
     Text: (_, themeProps) => ({
       h1Style: {
         color: themeProps.colors.primary,
