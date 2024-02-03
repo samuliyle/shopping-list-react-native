@@ -11,6 +11,7 @@
     "test": "jest --watchAll",
     "test:ci": "jest",
     "coverage": "jest --coverage",
+    "type-check": "tsc",
     "clean": "npx react-native-clean-project",
     "dev-tools": "npx react-devtools",
     "assets": "npx react-native-asset"
