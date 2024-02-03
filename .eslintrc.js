@@ -25,6 +25,11 @@ module.exports = {
             importNames: ['SafeAreaView'],
             message:
               'Use useSafeAreaInsets hook from react-native-safe-area-context instead of SafeAreaView component'
+          },
+          {
+            name: 'react-native',
+            importNames: ['Text', 'Button'],
+            message: 'Use @rneui/themed components instead'
           }
         ]
       }
