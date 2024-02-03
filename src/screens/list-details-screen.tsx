@@ -8,9 +8,7 @@ import {
   FAB as Fab,
   makeStyles,
   Button,
-  BottomSheet,
-  Icon,
-  useTheme
+  Icon
 } from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {useShoppingListStore} from '../store/shoppingListStore'
@@ -19,6 +17,7 @@ import {palette} from '../theme'
 import {ProgressBar} from '../components/progress-bar'
 import {Spacer} from '../components/spacer'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
+import {ListActionsBottomSheet} from '../components/list-actions-bottom-sheet'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
@@ -33,7 +32,6 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {showToast} = useContext(ToastContext)
   const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
-  const theme = useTheme()
 
   const lists = useShoppingListStore(state => state.shoppingLists)
   const deleteItem = useShoppingListStore(state => state.deleteItem)
@@ -45,15 +43,14 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
 
   const list = lists.find(l => l.id === id) as ShoppingList
 
-  const openBottomSheet = () => {
-    setBottomSheetOpen(true)
+  const closeListActionsBottomSheet = () => {
+    setBottomSheetOpen(false)
   }
 
   useEffect(() => {
-    // Update title
     navigation.setOptions({
-      title: list.name,
-      headerRight: () => headerRight(openBottomSheet)
+      title: list.name, // Update screen title
+      headerRight: () => headerRight(() => setBottomSheetOpen(true))
     })
   }, [list.name, navigation])
 
@@ -140,39 +137,12 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
         size="large"
         title="Add"
       />
-      <BottomSheet
+      <ListActionsBottomSheet
+        closeBottomSheet={closeListActionsBottomSheet}
         isVisible={bottomSheetOpen}
-        onBackdropPress={() => setBottomSheetOpen(false)}>
-        <Spacer padding="xl" style={styles.bottomSheetContentContainer}>
-          <View style={styles.bottomSheetHeaderContainer}>
-            <Text h4>Manage list</Text>
-            <Icon
-              name="cancel"
-              color={theme.theme.colors.grey4}
-              onPress={() => setBottomSheetOpen(false)}
-            />
-          </View>
-          <Spacer marginTop="md" />
-          <ListItem
-            containerStyle={styles.bottomSheetListItemContainer}
-            onPress={onUncheckAllItemsPress}>
-            <Icon name="remove-done" color={theme.theme.colors.grey3} />
-            <ListItem.Content>
-              <ListItem.Title>Uncheck all items</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-          <ListItem
-            containerStyle={styles.bottomSheetListItemContainer}
-            onPress={onDeleteCheckedItemsPress}>
-            <Icon name="delete-forever" color={theme.theme.colors.error} />
-            <ListItem.Content>
-              <ListItem.Title style={styles.bottomSheetDeleteText}>
-                Delete checked items
-              </ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        </Spacer>
-      </BottomSheet>
+        onDeleteCheckedItemsPress={onDeleteCheckedItemsPress}
+        onUncheckAllItemsPress={onUncheckAllItemsPress}
+      />
     </View>
   )
 }
@@ -208,29 +178,5 @@ const useStyles = makeStyles(theme => ({
   deleteButton: {
     minHeight: '100%',
     backgroundColor: theme.colors.error
-  },
-  bottomSheetContentContainer: {
-    backgroundColor:
-      theme.mode === 'dark'
-        ? palette.listItem.darkBackground
-        : theme.colors.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20
-  },
-  bottomSheetHeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  bottomSheetListItemContainer: {
-    backgroundColor:
-      theme.mode === 'dark'
-        ? palette.listItem.darkBackground
-        : theme.colors.background,
-    paddingLeft: 0,
-    paddingRight: 0
-  },
-  bottomSheetDeleteText: {
-    color: theme.colors.error
   }
 }))
