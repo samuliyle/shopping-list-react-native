@@ -2,21 +2,14 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import React, {useState} from 'react'
 import {RootStackParamList} from '../types'
 import {ShoppingListCard} from '../components/shopping-list-card'
-import {
-  BottomSheet,
-  Button,
-  FAB as Fab,
-  Input,
-  Text,
-  makeStyles
-} from '@rneui/themed'
+import {FAB as Fab, Text, makeStyles} from '@rneui/themed'
 import {View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {FlashList} from '@shopify/flash-list'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import {ShoppingCartIcon} from '../components/icons/shopping-cart-icon'
 import {Spacer} from '../components/spacer'
-import {palette} from '../theme'
+import {ListEditBottomSheet} from '../components/list-edit-bottom-sheet'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
@@ -25,7 +18,6 @@ export const ListScreen = ({navigation}: Props) => {
   const styles = useStyles()
 
   const [editListId, setEditListId] = useState<number | undefined>()
-  const [editListName, setEditListName] = useState<string | undefined>()
 
   const lists = useShoppingListStore(state => state.shoppingLists)
   const removeShoppingList = useShoppingListStore(
@@ -46,17 +38,18 @@ export const ListScreen = ({navigation}: Props) => {
   }
 
   const onEdit = (id: number) => {
-    const editedList = lists.find(l => l.id === id)
     setEditListId(id)
-    setEditListName(editedList?.name)
   }
 
-  const onRenameSave = () => {
-    if (editListId && editListName) {
-      renameShoppingList(editListId, editListName)
+  const onRenameSave = (newListName: string) => {
+    if (editListId) {
+      renameShoppingList(editListId, newListName)
     }
     setEditListId(undefined)
-    setEditListName(undefined)
+  }
+
+  const onRenameCancel = () => {
+    setEditListId(undefined)
   }
 
   const renderItemSeparator = () => {
@@ -64,6 +57,7 @@ export const ListScreen = ({navigation}: Props) => {
   }
 
   const noLists = lists.length === 0
+  const editedList = lists.find(l => l.id === editListId)
 
   return (
     <View
@@ -105,38 +99,13 @@ export const ListScreen = ({navigation}: Props) => {
         size="large"
         title="New list"
       />
-      <BottomSheet
-        scrollViewProps={{
-          keyboardShouldPersistTaps: 'handled'
-        }}
-        isVisible={editListId !== undefined}
-        onBackdropPress={() => setEditListId(undefined)}>
-        <Spacer padding="xl" style={styles.bottomSheetContentContainer}>
-          <Text h4>Rename list</Text>
-          <Spacer marginTop="md" />
-          <Input
-            autoFocus
-            selectTextOnFocus
-            value={editListName}
-            onChangeText={newValue => setEditListName(newValue)}
-            containerStyle={styles.bottomSheetInputContainer}
-          />
-          <View style={styles.bottomSheetButtonsContainer}>
-            <Button
-              title="cancel"
-              containerStyle={styles.bottomSheetCancelButtonContainer}
-              type="clear"
-              onPress={() => setEditListId(undefined)}
-            />
-            <Button
-              title="save"
-              containerStyle={styles.bottomSheetSaveButtonContainer}
-              disabled={!editListName}
-              onPress={onRenameSave}
-            />
-          </View>
-        </Spacer>
-      </BottomSheet>
+      {editListId && editedList && (
+        <ListEditBottomSheet
+          onCancel={onRenameCancel}
+          onSave={onRenameSave}
+          listName={editedList.name}
+        />
+      )}
     </View>
   )
 }
@@ -155,30 +124,5 @@ const useStyles = makeStyles(theme => ({
   },
   itemSeparator: {
     height: 15
-  },
-  bottomSheetContentContainer: {
-    backgroundColor:
-      theme.mode === 'dark'
-        ? palette.listItem.darkBackground
-        : theme.colors.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20
-  },
-  bottomSheetInputContainer: {
-    paddingLeft: 0
-  },
-  bottomSheetInput: {
-    borderWidth: 3
-  },
-  bottomSheetButtonsContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly'
-  },
-  bottomSheetCancelButtonContainer: {
-    flex: 1
-  },
-  bottomSheetSaveButtonContainer: {
-    flex: 1
   }
 }))
