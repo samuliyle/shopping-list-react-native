@@ -18,6 +18,7 @@ import {ProgressBar} from '../components/progress-bar'
 import {Spacer} from '../components/spacer'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import {ListActionsBottomSheet} from '../components/list-actions-bottom-sheet'
+import {ListItemActionsBottomSheet} from '../components/list-item-actions-bottom-sheet'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListDetails'>
 
@@ -28,7 +29,11 @@ const headerRight = (openBottomSheet: () => void) => (
 export const ListDetailsScreen = ({navigation, route}: Props) => {
   const {id} = route.params
 
-  const [bottomSheetOpen, setBottomSheetOpen] = useState(false)
+  const [listActionsBottomSheetOpen, setListActionsBottomSheetOpen] =
+    useState(false)
+  const [selectedListItem, setSelectedListItem] = useState<
+    ShoppingListItem | undefined
+  >()
   const {showToast} = useContext(ToastContext)
   const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
@@ -36,6 +41,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const lists = useShoppingListStore(state => state.shoppingLists)
   const deleteItem = useShoppingListStore(state => state.deleteItem)
   const toggleItem = useShoppingListStore(state => state.toggleItem)
+  const updateItem = useShoppingListStore(state => state.updateItem)
   const uncheckAllItems = useShoppingListStore(state => state.uncheckAllItems)
   const deleteCheckedItems = useShoppingListStore(
     state => state.deleteCheckedItems
@@ -44,13 +50,40 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const list = lists.find(l => l.id === id) as ShoppingList
 
   const closeListActionsBottomSheet = () => {
-    setBottomSheetOpen(false)
+    setListActionsBottomSheetOpen(false)
+  }
+
+  const onListItemActionsBottomSheetSave = (
+    newItemName: string,
+    newItemQuantity: number
+  ) => {
+    if (selectedListItem) {
+      const itemNameWasUpdated = selectedListItem.name !== newItemName
+      const listContainsNewItemName =
+        itemNameWasUpdated &&
+        (!newItemName || list.items.some(i => i.name === newItemName))
+
+      const newName = listContainsNewItemName
+        ? selectedListItem.name
+        : newItemName
+
+      updateItem(list.id, selectedListItem.name, newName, newItemQuantity)
+      setSelectedListItem(undefined)
+    }
+  }
+
+  const onListItemActionsBottomSheetCancel = () => {
+    setSelectedListItem(undefined)
+  }
+
+  const onListItemPress = (item: ShoppingListItem) => {
+    setSelectedListItem(item)
   }
 
   useEffect(() => {
     navigation.setOptions({
       title: list.name, // Update screen title
-      headerRight: () => headerRight(() => setBottomSheetOpen(true))
+      headerRight: () => headerRight(() => setListActionsBottomSheetOpen(true))
     })
   }, [list.name, navigation])
 
@@ -69,22 +102,32 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   }
 
   const onUncheckAllItemsPress = () => {
-    setBottomSheetOpen(false)
+    setListActionsBottomSheetOpen(false)
     uncheckAllItems(list.id)
   }
 
   const onDeleteCheckedItemsPress = () => {
-    setBottomSheetOpen(false)
+    setListActionsBottomSheetOpen(false)
     deleteCheckedItems(list.id)
   }
 
   const renderRightContent = (item: ShoppingListItem) => (
-    <Button
-      onPress={() => onItemDelete(item)}
-      icon={{name: 'delete', color: 'white'}}
-      buttonStyle={styles.deleteButton}
-      containerStyle={styles.deleteButtonContainer}
-    />
+    <View style={styles.rightContentContainer}>
+      <Button
+        icon={{name: 'edit', color: 'white'}}
+        containerStyle={styles.editButtonContainer}
+        buttonStyle={styles.editButton}
+        onPress={() => {
+          onListItemPress(item)
+        }}
+      />
+      <Button
+        onPress={() => onItemDelete(item)}
+        icon={{name: 'delete', color: 'white'}}
+        buttonStyle={styles.deleteButton}
+        containerStyle={styles.deleteButtonContainer}
+      />
+    </View>
   )
 
   const checkedCount = list.items.filter(i => i.checked).length
@@ -112,6 +155,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
             data={list.items}
             renderItem={data => (
               <ListItem.Swipeable
+                onPress={() => onListItemPress(data.item)}
                 bottomDivider
                 rightContent={() => renderRightContent(data.item)}>
                 <ListItem.CheckBox
@@ -137,12 +181,20 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
         size="large"
         title="Add"
       />
-      <ListActionsBottomSheet
-        closeBottomSheet={closeListActionsBottomSheet}
-        isVisible={bottomSheetOpen}
-        onDeleteCheckedItemsPress={onDeleteCheckedItemsPress}
-        onUncheckAllItemsPress={onUncheckAllItemsPress}
-      />
+      {listActionsBottomSheetOpen && (
+        <ListActionsBottomSheet
+          closeBottomSheet={closeListActionsBottomSheet}
+          onDeleteCheckedItemsPress={onDeleteCheckedItemsPress}
+          onUncheckAllItemsPress={onUncheckAllItemsPress}
+        />
+      )}
+      {selectedListItem && (
+        <ListItemActionsBottomSheet
+          onCancel={onListItemActionsBottomSheetCancel}
+          onSave={onListItemActionsBottomSheetSave}
+          selectedItem={selectedListItem}
+        />
+      )}
     </View>
   )
 }
@@ -168,7 +220,20 @@ const useStyles = makeStyles(theme => ({
         ? palette.listItem.darkBackground
         : palette.listItem.lightBackground
   },
+  rightContentContainer: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  editButtonContainer: {
+    flex: 1,
+    borderRadius: 0
+  },
+  editButton: {
+    minHeight: '100%',
+    backgroundColor: theme.colors.success
+  },
   deleteButtonContainer: {
+    flex: 1,
     borderTopRightRadius: 9,
     borderBottomRightRadius: 9,
     borderTopLeftRadius: 0,

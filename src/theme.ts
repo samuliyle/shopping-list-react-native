@@ -137,12 +137,16 @@ export const theme = createTheme({
     },
     Input: (_, themeProps) => ({
       inputContainerStyle: {
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderLeftWidth: 2,
-        borderRightWidth: 2,
+        borderTopWidth: 1.5,
+        borderBottomWidth: 1.5,
+        borderLeftWidth: 1.5,
+        borderRightWidth: 1.5,
         borderColor: themeProps.colors.primary,
-        borderRadius: 10
+        borderRadius: 10,
+        paddingHorizontal: 5
+      },
+      labelStyle: {
+        marginBottom: 5
       },
       containerStyle: {
         paddingLeft: 0,

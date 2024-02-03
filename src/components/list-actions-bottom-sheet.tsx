@@ -12,14 +12,12 @@ import {View} from 'react-native'
 import {palette} from '../theme'
 
 type Props = {
-  isVisible: boolean
   closeBottomSheet: () => void
   onUncheckAllItemsPress: () => void
   onDeleteCheckedItemsPress: () => void
 }
 
 export const ListActionsBottomSheet = ({
-  isVisible,
   closeBottomSheet,
   onUncheckAllItemsPress,
   onDeleteCheckedItemsPress
@@ -28,7 +26,7 @@ export const ListActionsBottomSheet = ({
   const theme = useTheme()
 
   return (
-    <BottomSheet isVisible={isVisible} onBackdropPress={closeBottomSheet}>
+    <BottomSheet isVisible onBackdropPress={closeBottomSheet}>
       <Spacer padding="xl" style={styles.bottomSheetContentContainer}>
         <View style={styles.bottomSheetHeaderContainer}>
           <Text h4>Manage list</Text>

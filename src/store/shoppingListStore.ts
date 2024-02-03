@@ -57,6 +57,15 @@ type ShoppingListActions = {
    */
   toggleItem: (listId: number, itemName: string) => void
   /**
+   * Update item with new name and quantity
+   */
+  updateItem: (
+    listId: number,
+    itemName: string,
+    newName: string,
+    newQuantity: number
+  ) => void
+  /**
    * Increase items quantity count
    */
   increaseItemQuantity: (listId: number, itemName: string) => void
@@ -157,6 +166,17 @@ export const useShoppingListStore = create<
             const item = list.items.find(i => i.name === itemName)
             if (item) {
               item.checked = !item.checked
+            }
+          }
+        }),
+      updateItem: (listId, itemName, newName, newQuantity) =>
+        set(state => {
+          const list = state.shoppingLists.find(l => l.id === listId)
+          if (list) {
+            const item = list.items.find(i => i.name === itemName)
+            if (item) {
+              item.name = newName
+              item.quantity = newQuantity ?? 1
             }
           }
         }),
