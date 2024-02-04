@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {View} from 'react-native'
 import {ShoppingListItem, RootStackParamList, ShoppingList} from '../types'
 import {
@@ -12,7 +12,7 @@ import {
 } from '@rneui/themed'
 import {ToastContext} from '../contexts/toast-context'
 import {useShoppingListStore} from '../store/shoppingListStore'
-import {FlashList} from '@shopify/flash-list'
+import {FlashList, ListRenderItemInfo} from '@shopify/flash-list'
 import {palette} from '../theme'
 import {ProgressBar} from '../components/progress-bar'
 import {Spacer} from '../components/spacer'
@@ -87,19 +87,25 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
     })
   }, [list.name, navigation])
 
-  const onItemDelete = (item: ShoppingListItem) => {
-    deleteItem(id, item.name)
-    showToast(`Deleted ${item.name}`)
-  }
+  const onItemDelete = useCallback(
+    (item: ShoppingListItem) => {
+      deleteItem(id, item.name)
+      showToast(`Deleted ${item.name}`)
+    },
+    [deleteItem, id, showToast]
+  )
 
   const onFabPress = () => {
     navigation.push('NewItem', {listId: id})
   }
 
-  const onCheckboxPress = (item: ShoppingListItem) => {
-    toggleItem(id, item.name)
-    showToast(`toggle ${item.name}`)
-  }
+  const onCheckboxPress = useCallback(
+    (item: ShoppingListItem) => {
+      toggleItem(id, item.name)
+      showToast(`toggle ${item.name}`)
+    },
+    [id, showToast, toggleItem]
+  )
 
   const onUncheckAllItemsPress = () => {
     setListActionsBottomSheetOpen(false)
@@ -111,23 +117,48 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
     deleteCheckedItems(list.id)
   }
 
-  const renderRightContent = (item: ShoppingListItem) => (
-    <View style={styles.rightContentContainer}>
-      <Button
-        icon={{name: 'edit', color: 'white'}}
-        containerStyle={styles.editButtonContainer}
-        buttonStyle={styles.editButton}
-        onPress={() => {
-          onListItemPress(item)
-        }}
-      />
-      <Button
-        onPress={() => onItemDelete(item)}
-        icon={{name: 'delete', color: 'white'}}
-        buttonStyle={styles.deleteButton}
-        containerStyle={styles.deleteButtonContainer}
-      />
-    </View>
+  const renderRightContent = useCallback(
+    (item: ShoppingListItem) => (
+      <View style={styles.rightContentContainer}>
+        <Button
+          icon={{name: 'edit', color: 'white'}}
+          containerStyle={styles.editButtonContainer}
+          buttonStyle={styles.editButton}
+          onPress={() => {
+            onListItemPress(item)
+          }}
+        />
+        <Button
+          onPress={() => onItemDelete(item)}
+          icon={{name: 'delete', color: 'white'}}
+          buttonStyle={styles.deleteButton}
+          containerStyle={styles.deleteButtonContainer}
+        />
+      </View>
+    ),
+    [onItemDelete, styles]
+  )
+
+  const renderListItem = useCallback(
+    ({item}: ListRenderItemInfo<ShoppingListItem>) => (
+      <ListItem.Swipeable
+        onPress={() => onListItemPress(item)}
+        bottomDivider
+        rightContent={() => renderRightContent(item)}>
+        <ListItem.CheckBox
+          containerStyle={styles.listContainer}
+          checkedIcon="check"
+          uncheckedIcon="circle-o"
+          checked={item.checked}
+          onPress={() => onCheckboxPress(item)}
+        />
+        <ListItem.Content>
+          <ListItem.Title>{item.name}</ListItem.Title>
+        </ListItem.Content>
+        {item.quantity > 1 && <Text>{item.quantity}</Text>}
+      </ListItem.Swipeable>
+    ),
+    [onCheckboxPress, renderRightContent, styles.listContainer]
   )
 
   const checkedCount = list.items.filter(i => i.checked).length
@@ -153,24 +184,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
             estimatedItemSize={57}
             keyExtractor={item => item.name}
             data={list.items}
-            renderItem={data => (
-              <ListItem.Swipeable
-                onPress={() => onListItemPress(data.item)}
-                bottomDivider
-                rightContent={() => renderRightContent(data.item)}>
-                <ListItem.CheckBox
-                  containerStyle={styles.listContainer}
-                  checkedIcon="check"
-                  uncheckedIcon="circle-o"
-                  checked={data.item.checked}
-                  onPress={() => onCheckboxPress(data.item)}
-                />
-                <ListItem.Content>
-                  <ListItem.Title>{data.item.name}</ListItem.Title>
-                </ListItem.Content>
-                {data.item.quantity > 1 && <Text>{data.item.quantity}</Text>}
-              </ListItem.Swipeable>
-            )}
+            renderItem={renderListItem}
           />
         </>
       )}

@@ -1,11 +1,11 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useState} from 'react'
-import {RootStackParamList} from '../types'
+import React, {useCallback, useState} from 'react'
+import {RootStackParamList, ShoppingList} from '../types'
 import {ShoppingListCard} from '../components/shopping-list-card'
 import {FAB as Fab, Text, makeStyles} from '@rneui/themed'
 import {View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
-import {FlashList} from '@shopify/flash-list'
+import {FlashList, ListRenderItemInfo} from '@shopify/flash-list'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import {ShoppingCartIcon} from '../components/icons/shopping-cart-icon'
 import {Spacer} from '../components/spacer'
@@ -27,15 +27,21 @@ export const ListScreen = ({navigation}: Props) => {
     state => state.renameShoppingList
   )
 
-  const onPress = (id: number) => {
-    console.log('onpress', id)
-    navigation.push('ListDetails', {id})
-  }
+  const onPress = useCallback(
+    (id: number) => {
+      console.log('onpress', id)
+      navigation.push('ListDetails', {id})
+    },
+    [navigation]
+  )
 
-  const onDelete = (id: number) => {
-    console.log('delete', id)
-    removeShoppingList(id)
-  }
+  const onDelete = useCallback(
+    (id: number) => {
+      console.log('delete', id)
+      removeShoppingList(id)
+    },
+    [removeShoppingList]
+  )
 
   const onEdit = (id: number) => {
     setEditListId(id)
@@ -52,9 +58,22 @@ export const ListScreen = ({navigation}: Props) => {
     setEditListId(undefined)
   }
 
-  const renderItemSeparator = () => {
+  const renderItemSeparator = useCallback(() => {
     return <View style={styles.itemSeparator} />
-  }
+  }, [styles.itemSeparator])
+
+  const renderListItem = useCallback(
+    ({item}: ListRenderItemInfo<ShoppingList>) => (
+      <ShoppingListCard
+        items={item.items}
+        name={item.name}
+        onPress={() => onPress(item.id)}
+        onDelete={() => onDelete(item.id)}
+        onEdit={() => onEdit(item.id)}
+      />
+    ),
+    [onDelete, onPress]
+  )
 
   const noLists = lists.length === 0
   const editedList = lists.find(l => l.id === editListId)
@@ -80,15 +99,7 @@ export const ListScreen = ({navigation}: Props) => {
           estimatedItemSize={92}
           keyExtractor={list => list.id.toString()}
           data={lists}
-          renderItem={data => (
-            <ShoppingListCard
-              items={data.item.items}
-              name={data.item.name}
-              onPress={() => onPress(data.item.id)}
-              onDelete={() => onDelete(data.item.id)}
-              onEdit={() => onEdit(data.item.id)}
-            />
-          )}
+          renderItem={renderListItem}
         />
       )}
       <Fab

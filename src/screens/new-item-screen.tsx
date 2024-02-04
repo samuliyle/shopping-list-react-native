@@ -1,8 +1,8 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useContext, useState} from 'react'
+import React, {useCallback, useContext, useState} from 'react'
 import {RootStackParamList, SearchResult, ShoppingList} from '../types'
 import {View} from 'react-native'
-import {FlashList} from '@shopify/flash-list'
+import {FlashList, ListRenderItemInfo} from '@shopify/flash-list'
 import {useSearchProducts} from '../hooks/use-search-products'
 import {
   ListItem,
@@ -61,25 +61,65 @@ export const NewItemScreen = ({route}: Props) => {
     setNewItemName('')
   }
 
-  const onSearchResultButtonPress = (item: SearchResult) => {
-    if (item.inCurrentList) {
-      increaseItemQuantity(listId, item.name)
-      showToast(`increase ${item.name} quantity`)
-    } else {
-      addItem(listId, item.name)
-      showToast(`add ${item.name}`)
-    }
-  }
+  const onSearchResultButtonPress = useCallback(
+    (item: SearchResult) => {
+      if (item.inCurrentList) {
+        increaseItemQuantity(listId, item.name)
+        showToast(`increase ${item.name} quantity`)
+      } else {
+        addItem(listId, item.name)
+        showToast(`add ${item.name}`)
+      }
+    },
+    [addItem, increaseItemQuantity, listId, showToast]
+  )
 
-  const onDeleteItemButtonPress = (item: SearchResult) => {
-    if (item.quantity && item.quantity > 1) {
-      decreaseItemQuantity(listId, item.name)
-      showToast(`decrease ${item.name} quantity`)
-    } else {
-      deleteItem(listId, item.name)
-      showToast(`delete ${item.name}`)
-    }
-  }
+  const onDeleteItemButtonPress = useCallback(
+    (item: SearchResult) => {
+      if (item.quantity && item.quantity > 1) {
+        decreaseItemQuantity(listId, item.name)
+        showToast(`decrease ${item.name} quantity`)
+      } else {
+        deleteItem(listId, item.name)
+        showToast(`delete ${item.name}`)
+      }
+    },
+    [decreaseItemQuantity, deleteItem, listId, showToast]
+  )
+
+  const renderListItem = useCallback(
+    ({item}: ListRenderItemInfo<SearchResult>) => (
+      <ListItem>
+        <Icon
+          onPress={() => onSearchResultButtonPress(item)}
+          type="material"
+          name="add-circle"
+          color={item.inCurrentList ? colors.primary : colors.grey4}
+          size={30}
+        />
+        <ListItem.Content>
+          <ListItem.Title>{item.name}</ListItem.Title>
+        </ListItem.Content>
+        {item.inCurrentList && (
+          <>
+            {item.quantity && item.quantity > 1 && (
+              <Spacer marginRight="sm">
+                <Text>{item.quantity}</Text>
+              </Spacer>
+            )}
+            <Icon
+              onPress={() => onDeleteItemButtonPress(item)}
+              type="material"
+              name={item.quantity && item.quantity > 1 ? 'remove' : 'close'}
+              color={colors.error}
+              size={30}
+            />
+          </>
+        )}
+      </ListItem>
+    ),
+    [colors, onDeleteItemButtonPress, onSearchResultButtonPress]
+  )
 
   return (
     <View style={[styles.container, insetsStyle]}>
@@ -97,36 +137,7 @@ export const NewItemScreen = ({route}: Props) => {
       <FlashList
         keyboardShouldPersistTaps="always"
         data={filteredProducts}
-        renderItem={({item}) => (
-          <ListItem>
-            <Icon
-              onPress={() => onSearchResultButtonPress(item)}
-              type="material"
-              name="add-circle"
-              color={item.inCurrentList ? colors.primary : colors.grey4}
-              size={30}
-            />
-            <ListItem.Content>
-              <ListItem.Title>{item.name}</ListItem.Title>
-            </ListItem.Content>
-            {item.inCurrentList && (
-              <>
-                {item.quantity && item.quantity > 1 && (
-                  <Spacer marginRight="sm">
-                    <Text>{item.quantity}</Text>
-                  </Spacer>
-                )}
-                <Icon
-                  onPress={() => onDeleteItemButtonPress(item)}
-                  type="material"
-                  name={item.quantity && item.quantity > 1 ? 'remove' : 'close'}
-                  color={colors.error}
-                  size={30}
-                />
-              </>
-            )}
-          </ListItem>
-        )}
+        renderItem={renderListItem}
         estimatedItemSize={72}
       />
       <Fab

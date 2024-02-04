@@ -31,7 +31,7 @@ export const ToastContext = createContext<ToastContextProps>({
 
 export const ToastProvider = ({children}: PropsWithChildren) => {
   const [toast, setToast] = useState<ToastMessage>(initialToast)
-  const timeout = useRef(0)
+  const timeout = useRef<number>()
 
   const showToast = useCallback((message: string) => {
     setToast({visible: true, message: message})
@@ -46,7 +46,7 @@ export const ToastProvider = ({children}: PropsWithChildren) => {
     if (toast.visible) {
       timeout.current = setTimeout(hideToast, 1500)
       return () => {
-        if (timeout.current) {
+        if (timeout.current != null) {
           clearTimeout(timeout.current)
         }
       }
