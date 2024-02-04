@@ -118,13 +118,14 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   }
 
   const renderRightContent = useCallback(
-    (item: ShoppingListItem) => (
+    (item: ShoppingListItem, reset: () => void) => (
       <View style={styles.rightContentContainer}>
         <Button
           icon={{name: 'edit', color: 'white'}}
           containerStyle={styles.editButtonContainer}
           buttonStyle={styles.editButton}
           onPress={() => {
+            reset()
             onListItemPress(item)
           }}
         />
@@ -144,7 +145,7 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
       <ListItem.Swipeable
         onPress={() => onListItemPress(item)}
         bottomDivider
-        rightContent={() => renderRightContent(item)}>
+        rightContent={reset => renderRightContent(item, reset)}>
         <ListItem.CheckBox
           containerStyle={styles.listContainer}
           checkedIcon="check"
