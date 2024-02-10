@@ -14,7 +14,8 @@
     "type-check": "tsc",
     "clean": "npx react-native-clean-project",
     "dev-tools": "npx react-devtools",
-    "assets": "npx react-native-asset"
+    "assets": "npx react-native-asset",
+    "release:android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.9",
