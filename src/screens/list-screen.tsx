@@ -1,21 +1,26 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {RootStackParamList, ShoppingList} from '../types'
 import {ShoppingListCard} from '../components/shopping-list-card'
 import {FAB as Fab, Text, makeStyles} from '@rneui/themed'
-import {View} from 'react-native'
+import {Dimensions, FlatList, View} from 'react-native'
 import {useShoppingListStore} from '../store/shoppingListStore'
-import {FlashList, ListRenderItemInfo} from '@shopify/flash-list'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
 import {ShoppingCartIcon} from '../components/icons/shopping-cart-icon'
 import {Spacer} from '../components/spacer'
 import {ListEditBottomSheet} from '../components/list-edit-bottom-sheet'
+
+const deviceHeight = Dimensions.get('window').height
+const itemHeight = 92
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lists'>
 
 export const ListScreen = ({navigation}: Props) => {
   const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const t0 = new Date()
 
   const [editListId, setEditListId] = useState<number | undefined>()
 
@@ -63,7 +68,7 @@ export const ListScreen = ({navigation}: Props) => {
   }, [styles.itemSeparator])
 
   const renderListItem = useCallback(
-    ({item}: ListRenderItemInfo<ShoppingList>) => (
+    ({item}: {item: ShoppingList}) => (
       <ShoppingListCard
         items={item.items}
         name={item.name}
@@ -74,6 +79,17 @@ export const ListScreen = ({navigation}: Props) => {
     ),
     [onDelete, onPress]
   )
+
+  const keyExtractor = useCallback((list: ShoppingList) => {
+    return list.id.toString()
+  }, [])
+
+  useEffect(() => {
+    const t1 = new Date()
+    console.log(
+      `ListScreen load took ${t1.getTime() - t0.getTime()} milliseconds.`
+    )
+  }, [t0])
 
   const noLists = lists.length === 0
   const editedList = lists.find(l => l.id === editListId)
@@ -92,14 +108,19 @@ export const ListScreen = ({navigation}: Props) => {
           <Text>Tap the plus button to start adding shopping lists</Text>
         </>
       ) : (
-        <FlashList
+        <FlatList
           keyboardShouldPersistTaps="handled"
           ItemSeparatorComponent={renderItemSeparator}
           contentContainerStyle={styles.shoppingListCardContainer}
-          estimatedItemSize={92}
-          keyExtractor={list => list.id.toString()}
+          keyExtractor={keyExtractor}
           data={lists}
           renderItem={renderListItem}
+          initialNumToRender={Math.ceil(deviceHeight / itemHeight)}
+          getItemLayout={(_, index) => ({
+            length: itemHeight,
+            offset: itemHeight * index,
+            index
+          })}
         />
       )}
       <Fab
