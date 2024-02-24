@@ -1,31 +1,26 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-import React, {useCallback, useContext, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {RootStackParamList, SearchResult, ShoppingList} from '../types'
-import {View} from 'react-native'
-import {FlashList, ListRenderItemInfo} from '@shopify/flash-list'
+import {Dimensions, FlatList, View} from 'react-native'
 import {useSearchProducts} from '../hooks/use-search-products'
-import {
-  ListItem,
-  FAB as Fab,
-  Icon,
-  useTheme,
-  makeStyles,
-  SearchBar,
-  Text
-} from '@rneui/themed'
-import {ToastContext} from '../contexts/toast-context'
+import {FAB as Fab, useTheme, makeStyles, SearchBar} from '@rneui/themed'
 import {useShoppingListStore} from '../store/shoppingListStore'
 import {Spacer} from '../components/spacer'
 import {palette} from '../theme'
 import {useSafeAreaInsetsStyle} from '../hooks/use-safe-area-insets-style'
+import {SearchListItem} from '../components/search-list-item'
+
+const deviceHeight = Dimensions.get('window').height
+const itemHeight = 72
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NewItem'>
 
 export const NewItemScreen = ({route}: Props) => {
   const {listId} = route.params
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const t0 = new Date()
 
   const [newItemName, setNewItemName] = useState('')
-  const {showToast} = useContext(ToastContext)
   const insetsStyle = useSafeAreaInsetsStyle()
   const styles = useStyles()
   const {
@@ -34,13 +29,6 @@ export const NewItemScreen = ({route}: Props) => {
 
   const lists = useShoppingListStore(state => state.shoppingLists)
   const addItem = useShoppingListStore(state => state.addItem)
-  const deleteItem = useShoppingListStore(state => state.deleteItem)
-  const increaseItemQuantity = useShoppingListStore(
-    state => state.increaseItemQuantity
-  )
-  const decreaseItemQuantity = useShoppingListStore(
-    state => state.decreaseItemQuantity
-  )
 
   const list = lists.find(l => l.id === listId) as ShoppingList
   const filteredProducts = useSearchProducts(list.items, newItemName)
@@ -57,89 +45,49 @@ export const NewItemScreen = ({route}: Props) => {
       return
     }
     addItem(listId, trimmedNewItem)
-    showToast(`add ${trimmedNewItem}`)
     setNewItemName('')
   }
 
-  const onSearchResultButtonPress = useCallback(
-    (item: SearchResult) => {
-      if (item.inCurrentList) {
-        increaseItemQuantity(listId, item.name)
-        showToast(`increase ${item.name} quantity`)
-      } else {
-        addItem(listId, item.name)
-        showToast(`add ${item.name}`)
-      }
-    },
-    [addItem, increaseItemQuantity, listId, showToast]
-  )
-
-  const onDeleteItemButtonPress = useCallback(
-    (item: SearchResult) => {
-      if (item.quantity && item.quantity > 1) {
-        decreaseItemQuantity(listId, item.name)
-        showToast(`decrease ${item.name} quantity`)
-      } else {
-        deleteItem(listId, item.name)
-        showToast(`delete ${item.name}`)
-      }
-    },
-    [decreaseItemQuantity, deleteItem, listId, showToast]
-  )
-
   const renderListItem = useCallback(
-    ({item}: ListRenderItemInfo<SearchResult>) => (
-      <ListItem>
-        <Icon
-          onPress={() => onSearchResultButtonPress(item)}
-          type="material"
-          name="add-circle"
-          color={item.inCurrentList ? colors.primary : colors.grey4}
-          size={30}
-        />
-        <ListItem.Content>
-          <ListItem.Title>{item.name}</ListItem.Title>
-        </ListItem.Content>
-        {item.inCurrentList && (
-          <>
-            {item.quantity != null && item.quantity > 1 && (
-              <Spacer marginRight="sm">
-                <Text>{item.quantity}</Text>
-              </Spacer>
-            )}
-            <Icon
-              onPress={() => onDeleteItemButtonPress(item)}
-              type="material"
-              name={item.quantity && item.quantity > 1 ? 'remove' : 'close'}
-              color={colors.error}
-              size={30}
-            />
-          </>
-        )}
-      </ListItem>
+    ({item}: {item: SearchResult}) => (
+      <SearchListItem item={item} listId={listId} />
     ),
-    [colors, onDeleteItemButtonPress, onSearchResultButtonPress]
+    [listId]
   )
+
+  useEffect(() => {
+    const t1 = new Date()
+    console.log(
+      `NewItemScreen load took ${t1.getTime() - t0.getTime()} milliseconds.`
+    )
+  }, [t0])
 
   return (
     <View style={[styles.container, insetsStyle]}>
-      <Spacer marginTop="md" />
-      <SearchBar
-        autoFocus
-        autoCapitalize="none"
-        placeholder="Add new item"
-        value={newItemName}
-        onChangeText={newValue => setNewItemName(newValue)}
-        focusable
-        onSubmitEditing={onCreate}
-        blurOnSubmit={false}
-      />
-      <FlashList
-        keyboardShouldPersistTaps="always"
-        data={filteredProducts}
-        renderItem={renderListItem}
-        estimatedItemSize={72}
-      />
+      <View style={styles.searchContainer}>
+        <Spacer marginTop="md" />
+        <SearchBar
+          autoFocus
+          autoCapitalize="none"
+          placeholder="Add new item"
+          value={newItemName}
+          onChangeText={newValue => setNewItemName(newValue)}
+          focusable
+          onSubmitEditing={onCreate}
+          blurOnSubmit={false}
+        />
+        <FlatList
+          keyboardShouldPersistTaps="always"
+          data={filteredProducts}
+          renderItem={renderListItem}
+          initialNumToRender={Math.ceil(deviceHeight / itemHeight)}
+          getItemLayout={(_, index) => ({
+            length: itemHeight,
+            offset: itemHeight * index,
+            index
+          })}
+        />
+      </View>
       <Fab
         placement="right"
         onPress={onCreate}
@@ -152,10 +100,13 @@ export const NewItemScreen = ({route}: Props) => {
 
 const useStyles = makeStyles(theme => ({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor:
       theme.mode === 'dark'
         ? palette.listItem.darkBackground
         : theme.colors.white
+  },
+  searchContainer: {
+    flexGrow: 1
   }
 }))
