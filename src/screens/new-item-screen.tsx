@@ -102,7 +102,7 @@ export const NewItemScreen = ({route}: Props) => {
         </ListItem.Content>
         {item.inCurrentList && (
           <>
-            {item.quantity && item.quantity > 1 && (
+            {item.quantity != null && item.quantity > 1 && (
               <Spacer marginRight="sm">
                 <Text>{item.quantity}</Text>
               </Spacer>
