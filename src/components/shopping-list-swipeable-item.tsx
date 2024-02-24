@@ -5,24 +5,36 @@ import {View} from 'react-native'
 import {Button, ListItem, Text, makeStyles} from '@rneui/themed'
 import {palette} from '../theme'
 
+type Props = {
+  listId: number
+  item: ShoppingListItem
+  onListItemPress: (item: ShoppingListItem) => void
+}
+
+// Only item values can change, so only compare them to check if we need to rerender item
+const areItemValuesEqual = (
+  prevProps: Readonly<Props>,
+  nextProps: Readonly<Props>
+) => {
+  return (
+    Object.entries(prevProps.item).sort().toString() ===
+    Object.entries(nextProps.item).sort().toString()
+  )
+}
+
 export const ShoppingListSwipeableItem = React.memo(
-  ({
-    listId,
-    item,
-    onCheckboxPress,
-    onListItemPress
-  }: {
-    listId: number
-    item: ShoppingListItem
-    onCheckboxPress: (item: ShoppingListItem) => void
-    onListItemPress: (item: ShoppingListItem) => void
-  }) => {
+  ({listId, item, onListItemPress}: Props) => {
     const styles = useStyles()
     const deleteItem = useShoppingListStore(state => state.deleteItem)
+    const toggleItem = useShoppingListStore(state => state.toggleItem)
 
     const onItemDelete = useCallback(() => {
       deleteItem(listId, item.name)
     }, [deleteItem, item.name, listId])
+
+    const onCheckboxPress = useCallback(() => {
+      toggleItem(listId, item.name)
+    }, [item.name, listId, toggleItem])
 
     const renderRightContent = useCallback(
       (reset: () => void) => (
@@ -57,7 +69,7 @@ export const ShoppingListSwipeableItem = React.memo(
           checkedIcon="check"
           uncheckedIcon="circle-o"
           checked={item.checked}
-          onPress={() => onCheckboxPress(item)}
+          onPress={onCheckboxPress}
         />
         <ListItem.Content>
           <ListItem.Title>{item.name}</ListItem.Title>
@@ -65,7 +77,8 @@ export const ShoppingListSwipeableItem = React.memo(
         {item.quantity > 1 && <Text>{item.quantity}</Text>}
       </ListItem.Swipeable>
     )
-  }
+  },
+  areItemValuesEqual
 )
 
 const useStyles = makeStyles(theme => ({

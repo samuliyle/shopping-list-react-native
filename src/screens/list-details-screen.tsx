@@ -34,7 +34,6 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
   const styles = useStyles()
 
   const lists = useShoppingListStore(state => state.shoppingLists)
-  const toggleItem = useShoppingListStore(state => state.toggleItem)
   const updateItem = useShoppingListStore(state => state.updateItem)
   const uncheckAllItems = useShoppingListStore(state => state.uncheckAllItems)
   const deleteCheckedItems = useShoppingListStore(
@@ -85,13 +84,6 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
     navigation.push('NewItem', {listId: id})
   }
 
-  const onCheckboxPress = useCallback(
-    (item: ShoppingListItem) => {
-      toggleItem(id, item.name)
-    },
-    [id, toggleItem]
-  )
-
   const onUncheckAllItemsPress = () => {
     setListActionsBottomSheetOpen(false)
     uncheckAllItems(list.id)
@@ -107,11 +99,10 @@ export const ListDetailsScreen = ({navigation, route}: Props) => {
       <ShoppingListSwipeableItem
         listId={id}
         item={item}
-        onCheckboxPress={onCheckboxPress}
         onListItemPress={onListItemPress}
       />
     ),
-    [id, onCheckboxPress, onListItemPress]
+    [id, onListItemPress]
   )
   useEffect(() => {
     const t1 = new Date()
